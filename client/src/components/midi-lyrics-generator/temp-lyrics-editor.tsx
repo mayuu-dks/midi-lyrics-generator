@@ -81,25 +81,40 @@ export default function TempLyricsEditor({
     // テキストエリアの値の変更を直接取得
     const newValue = e.target.value;
     
+    // デバッグログ追加
+    console.log('入力された原文:', newValue);
+    console.log('入力に含まれる特殊文字:', newValue.split('').map(char => `${char}:${char.charCodeAt(0)}`).join(', '));
+    
     // 縦棒をスラッシュに変換
     const processedValue = newValue.replace(/\|/g, '/');
+    console.log('処理後の文字列:', processedValue);
     
     // 状態を更新
     setTempLyrics(processedValue);
     onTempLyricsUpdate(processedValue);
+    
+    // 元の値と処理後の値を比較してログ出力
+    if (newValue !== processedValue) {
+      console.log('変換が行われました:', { 元の値: newValue, 変換後: processedValue });
+    }
     
     // 縦棒が含まれていた場合は、DOMも直接更新
     if (newValue !== processedValue && textareaRef.current) {
       // カーソル位置を保存
       const start = e.target.selectionStart;
       const end = e.target.selectionEnd;
+      console.log('カーソル位置:', { start, end });
       
       // 直接DOMを操作して値を設定
       textareaRef.current.value = processedValue;
+      console.log('DOM直接更新完了');
       
       // カーソル位置を元に戻す
       setTimeout(() => {
-        textareaRef.current?.setSelectionRange(start, end);
+        if (textareaRef.current) {
+          textareaRef.current.setSelectionRange(start, end);
+          console.log('カーソル位置を復元しました');
+        }
       }, 0);
     }
   };
