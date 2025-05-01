@@ -72,10 +72,34 @@ export default function MidiLyricsGenerator() {
     songMood,
     customPrompt,
     setCustomPrompt,
-    setShowPromptPreview
+    setShowPromptPreview,
+    customTempLyrics
   });
 
   const error = midiError || lyricsError;
+
+  // MIDIが読み込まれたら仮歌詞エディタを表示
+  useEffect(() => {
+    if (midiData) {
+      setShowTempLyricsEditor(true);
+    } else {
+      setShowTempLyricsEditor(false);
+      setCustomTempLyrics('');
+    }
+  }, [midiData]);
+
+  // 仮歌詞が更新されたらカスタム仮歌詞を保存
+  const handleTempLyricsUpdate = (tempLyrics: string) => {
+    setCustomTempLyrics(tempLyrics);
+  };
+  
+  // カスタム仮歌詞が更新されたら AI プロンプトに反映されるように適切なタイミングで再生成条件を見直す
+  useEffect(() => {
+    if (midiData && customTempLyrics) {
+      // customTempLyricsが変更された場合は、AI生成は自動トリガーしないが、ユーザーが予測できるようにプレビューを更新
+      // useLyricsGenerator の中でカスタム仮歌詞の変更に基づいて自動的にプロンプトが更新される
+    }
+  }, [midiData, customTempLyrics]);
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'ja' ? 'en' : 'ja');
@@ -113,6 +137,13 @@ export default function MidiLyricsGenerator() {
           </div>
         </div>
       </header>
+
+      {/* 仮歌詞エディタ */}
+      <TempLyricsEditor 
+        midiData={midiData}
+        onTempLyricsUpdate={handleTempLyricsUpdate}
+        isVisible={showTempLyricsEditor}
+      />
 
       {/* Main Content */}
       <main className="flex flex-col lg:flex-row gap-6">
@@ -171,5 +202,3 @@ export default function MidiLyricsGenerator() {
     </div>
   );
 }
-
-// End of component

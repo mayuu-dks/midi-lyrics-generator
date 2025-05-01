@@ -18,6 +18,7 @@ interface UseLyricsGeneratorProps {
   customPrompt: string;
   setCustomPrompt: (prompt: string) => void;
   setShowPromptPreview: (show: boolean) => void;
+  customTempLyrics?: string;
 }
 
 export function useLyricsGenerator({
@@ -28,7 +29,8 @@ export function useLyricsGenerator({
   songMood,
   customPrompt,
   setCustomPrompt,
-  setShowPromptPreview
+  setShowPromptPreview,
+  customTempLyrics = ''
 }: UseLyricsGeneratorProps) {
   const [lyrics, setLyrics] = useState<string>('');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
@@ -158,7 +160,12 @@ export function useLyricsGenerator({
     });
     
     // 最終的なフレーズパターン文字列を生成
-    const fullPhrasePattern = phrasesGrouped.join('  ');
+    let fullPhrasePattern = phrasesGrouped.join('  ');
+    
+    // カスタム仮歌詞が指定されている場合はそちらを使用
+    if (customTempLyrics && customTempLyrics.trim()) {
+      fullPhrasePattern = customTempLyrics;
+    }
     
     const moodText = songMood && songMood !== 'none' ? songMood : '指定なし';
     
@@ -351,14 +358,14 @@ ${fullPhrasePattern}
       const prompts = generatePrompt(midi);
       setCurrentUserPrompt(prompts.userPrompt);
     }
-  }, [language, songTitle, songMood]);
+  }, [language, songTitle, songMood, customTempLyrics, generatePrompt]);
   
-  // MIDIデータが変更されたときにユーザープロンプトを更新
+  // MIDIデータまたはカスタム仮歌詞が変更されたときにユーザープロンプトを更新
   useEffect(() => {
     if (midiData) {
       updateCurrentUserPrompt(midiData);
     }
-  }, [midiData, updateCurrentUserPrompt]);
+  }, [midiData, customTempLyrics, updateCurrentUserPrompt]);
   
   return {
     lyrics,
