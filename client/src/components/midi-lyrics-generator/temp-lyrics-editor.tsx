@@ -84,13 +84,12 @@ export default function TempLyricsEditor({
 
   // 仮歌詞にスラッシュで音節区切りを追加する関数
   const addSyllableDividers = () => {
-    // スペースの代わりにスラッシュを使用
-    const withDividers = tempLyrics
-      .replace(/ /g, '/') // スペースをスラッシュに変換
-      .replace(/\/{2,}/g, ' '); // 連続するスラッシュをスペースに戻す
+    // ダイレクトなアプローチ：ラ、ラー、ラーーの後にスラッシュを付ける
+    const words = tempLyrics.split(' ');
+    const withSlashes = words.join('/');
     
-    setTempLyrics(withDividers);
-    onTempLyricsUpdate(withDividers);
+    setTempLyrics(withSlashes);
+    onTempLyricsUpdate(withSlashes);
   };
 
   if (!isVisible || !midiData) return null;
@@ -136,10 +135,13 @@ export default function TempLyricsEditor({
 
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <p>
-          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、スペースの代わりにスラッシュ(/)を挿入してください。「区切り追加」ボタンで一括変換することもできます。
+          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、スペースの代わりにスラッシュ(/)を挿入してください。「区切り追加」ボタンを押すと全てのスペースをスラッシュに置き換えます。
         </p>
         <p className="mt-1">
           <span className="font-semibold">例：</span> 「ラ ラ ラ ラ」→「ラ/ラ/ラ/ラ」
+        </p>
+        <p className="mt-1">
+          <span className="font-semibold">ヒント：</span> 音節の区切りをより細かく設定すると、AIが音節を正確にマッチさせやすくなります。
         </p>
       </div>
     </div>
