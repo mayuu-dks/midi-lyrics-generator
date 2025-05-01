@@ -148,6 +148,68 @@ export default function TempLyricsEditor({
           >
             元に戻す
           </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              // デバッグとトラブルシューティング用のボタン
+              if (textareaRef.current) {
+                const textarea = textareaRef.current;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                
+                // 現在のテキストにスラッシュを挿入
+                const currentValue = textarea.value;
+                const newValue = currentValue.substring(0, start) + '/' + currentValue.substring(end);
+                
+                console.log('手動挿入前:', currentValue);
+                console.log('手動挿入後:', newValue);
+                
+                // 状態を更新
+                setTempLyrics(newValue);
+                onTempLyricsUpdate(newValue);
+                
+                // DOMを直接操作して値を設定
+                textarea.value = newValue;
+                
+                // カーソル位置を更新
+                setTimeout(() => {
+                  textarea.focus();
+                  textarea.setSelectionRange(start + 1, start + 1);
+                }, 0);
+              }
+            }}
+          >
+            / 文字挿入
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              if (!textareaRef.current) return;
+
+              // 直接テキストエリアから値を取得
+              const currentText = textareaRef.current.value;
+              console.log('スペース置換前:', currentText);
+              
+              // スペースをスラッシュに置換
+              const newText = currentText.replace(/ /g, '/');
+              
+              // 複数のスラッシュがあれば単一にする
+              const finalResult = newText.replace(/\/+/g, '/');
+              
+              console.log('スペース置換後:', finalResult);
+              
+              // 状態を更新
+              setTempLyrics(finalResult);
+              onTempLyricsUpdate(finalResult);
+              
+              // DOMを直接操作してテキストエリアの値を設定
+              textareaRef.current.value = finalResult;
+            }}
+          >
+            スペース→/変換
+          </Button>
         </div>
       </div>
 
@@ -162,6 +224,48 @@ export default function TempLyricsEditor({
           rows={4}
           defaultValue={tempLyrics}
           onChange={handleTempLyricsChange}
+          onKeyDown={(e) => {
+            // キーコードのデバッグログ出力
+            console.log('押されたキー:', e.key, 'keyCode:', e.keyCode, 'code:', e.code);
+            
+            // スラッシュキーが押されたか確認
+            if (e.key === '/' || e.code === 'Slash') {
+              console.log('スラッシュキーが押されました');
+              
+              // IMEの影響やキーボードでの入力が出来ない場合を考慮して、手動で文字を挿入するオプションを追加
+              const textarea = e.currentTarget;
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              
+              // この部分は必要に応じてコメント解除すると、自動文字挿入が有効になります
+              /*
+              // 現在のテキストにスラッシュを挿入
+              const currentValue = textarea.value;
+              const newValue = currentValue.substring(0, start) + '/' + currentValue.substring(end);
+              
+              // 状態を更新
+              setTempLyrics(newValue);
+              onTempLyricsUpdate(newValue);
+              
+              // DOMを直接操作して値を設定
+              textarea.value = newValue;
+              
+              // カーソル位置を更新
+              setTimeout(() => {
+                textarea.focus();
+                textarea.setSelectionRange(start + 1, start + 1);
+              }, 0);
+              
+              // 通常のキー入力を防止
+              e.preventDefault();
+              */
+            }
+            
+            // 縦棒キーもデバッグ
+            if (e.key === '|' || e.code === 'IntlBackslash') {
+              console.log('縦棒キーが押されました');
+            }
+          }}
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
           placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ/ラ/ラ)"
         />
@@ -169,7 +273,10 @@ export default function TempLyricsEditor({
 
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <p>
-          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、スペースの代わりにスラッシュ(/)を手動で入力してください。
+          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、スペースの代わりにスラッシュ(/)を手動で入力するか、「/ 文字挿入」ボタンを使用します。
+        </p>
+        <p className="mt-1">
+          <span className="font-semibold">ボタン機能：</span> 「スペース→/変換」ボタンをクリックすると、すべてのスペースがスラッシュに変換されます。
         </p>
         <p className="mt-1">
           <span className="font-semibold">例：</span> 「ラ ラ ラ ラ」→「ラ/ラ/ラ/ラ」
