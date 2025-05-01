@@ -83,10 +83,17 @@ export default function TempLyricsEditor({
     
     // デバッグログ追加
     console.log('入力された原文:', newValue);
-    console.log('入力に含まれる特殊文字:', newValue.split('').map(char => `${char}:${char.charCodeAt(0)}`).join(', '));
     
-    // 縦棒をスラッシュに変換
-    const processedValue = newValue.replace(/\|/g, '/');
+    // スラッシュの代替として使用する記号をスラッシュに変換
+    // 値を変換する前にスラッシュが含まれているかも確認しておく
+    const hasSlash = newValue.indexOf('/') !== -1;
+    
+    // 縦棒、プラス記号、アスタリスクをスラッシュに変換
+    let processedValue = newValue;
+    processedValue = processedValue.replace(/\|/g, '/');  // 縦棒をスラッシュに
+    processedValue = processedValue.replace(/\+/g, '/');  // プラス記号をスラッシュに
+    processedValue = processedValue.replace(/\*/g, '/');  // アスタリスクをスラッシュに
+    
     console.log('処理後の文字列:', processedValue);
     
     // 状態を更新
@@ -98,22 +105,20 @@ export default function TempLyricsEditor({
       console.log('変換が行われました:', { 元の値: newValue, 変換後: processedValue });
     }
     
-    // 縦棒が含まれていた場合は、DOMも直接更新
+    // 元の入力に縦棒、プラス、アスタリスクが含まれていた場合、またはスラッシュが元から存在していた場合は
+    // DOMを直接更新する
     if (newValue !== processedValue && textareaRef.current) {
       // カーソル位置を保存
       const start = e.target.selectionStart;
       const end = e.target.selectionEnd;
-      console.log('カーソル位置:', { start, end });
       
       // 直接DOMを操作して値を設定
       textareaRef.current.value = processedValue;
-      console.log('DOM直接更新完了');
       
       // カーソル位置を元に戻す
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.setSelectionRange(start, end);
-          console.log('カーソル位置を復元しました');
         }
       }, 0);
     }
@@ -231,37 +236,46 @@ export default function TempLyricsEditor({
           />
 
           {/* クイックアクションボタン - テキストエリア内に配置 */}
-          <div className="absolute bottom-3 right-3 flex gap-1 z-10">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              onClick={() => {
-                if (textareaRef.current) {
-                  const textarea = textareaRef.current;
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  
-                  // 現在のテキストにスラッシュを挿入
-                  const currentValue = textarea.value;
-                  const newValue = currentValue.substring(0, start) + '/' + currentValue.substring(end);
-                  
-                  // 状態を更新
-                  setTempLyrics(newValue);
-                  onTempLyricsUpdate(newValue);
-                  
-                  // DOMを直接操作して値を設定
-                  textarea.value = newValue;
-                  
-                  // カーソル位置を更新
-                  setTimeout(() => {
-                    textarea.focus();
-                    textarea.setSelectionRange(start + 1, start + 1);
-                  }, 0);
-                }
-              }}
-            >
-              /
-            </button>
+          <div className="absolute bottom-3 right-3 flex gap-1.5 z-10">
+            {/* 区切り記号のクイックボタン群 */}
+            {[
+              { symbol: '/', color: 'bg-blue-600 hover:bg-blue-700' },
+              { symbol: '+', color: 'bg-green-600 hover:bg-green-700' },
+              { symbol: '*', color: 'bg-purple-600 hover:bg-purple-700' },
+              { symbol: '|', color: 'bg-orange-600 hover:bg-orange-700' }
+            ].map(({ symbol, color }) => (
+              <button
+                key={symbol}
+                type="button"
+                className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${color} px-2 py-1 text-sm font-semibold text-white shadow hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white`}
+                onClick={() => {
+                  if (textareaRef.current) {
+                    const textarea = textareaRef.current;
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    
+                    // 現在のテキストに選択した記号を挿入
+                    const currentValue = textarea.value;
+                    const newValue = currentValue.substring(0, start) + symbol + currentValue.substring(end);
+                    
+                    // 状態を更新 (ここでは自動置換は行われないので、実際に挿入された記号が使用される)
+                    setTempLyrics(newValue);
+                    onTempLyricsUpdate(newValue);
+                    
+                    // DOMを直接操作して値を設定
+                    textarea.value = newValue;
+                    
+                    // カーソル位置を更新
+                    setTimeout(() => {
+                      textarea.focus();
+                      textarea.setSelectionRange(start + 1, start + 1);
+                    }, 0);
+                  }
+                }}
+              >
+                {symbol}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -271,7 +285,7 @@ export default function TempLyricsEditor({
           <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、次の方法があります：
         </p>
         <p className="mt-1">
-          <span className="font-semibold">1. インラインボタン：</span> テキストエリア内の右下にある <span className="inline-block px-2 py-1 rounded-full bg-primary text-white text-xs">/</span> ボタンをクリックすると、カーソル位置にスラッシュが挿入されます。
+          <span className="font-semibold">1. インラインボタン：</span> テキストエリア内の右下にある記号ボタン <span className="inline-block px-1 py-0.5 rounded-full bg-blue-600 text-white text-xs">/</span> <span className="inline-block px-1 py-0.5 rounded-full bg-green-600 text-white text-xs">+</span> <span className="inline-block px-1 py-0.5 rounded-full bg-purple-600 text-white text-xs">*</span> <span className="inline-block px-1 py-0.5 rounded-full bg-orange-600 text-white text-xs">|</span> をクリックすると、カーソル位置にその記号が挿入されます。
         </p>
         <p className="mt-1">
           <span className="font-semibold">2. 一括変換：</span> 「スペース→/変換」ボタンをクリックすると、すべてのスペースがスラッシュに変換されます。
@@ -280,7 +294,10 @@ export default function TempLyricsEditor({
           <span className="font-semibold">例：</span> 「ラ ラ ラ ラ」→「ラ/ラ/ラ/ラ」
         </p>
         <p className="mt-1">
-          <span className="font-semibold">注意：</span> スラッシュ(/) の代わりに縦棒 (|) を入力すると自動的にスラッシュに変換されます。
+          <span className="font-semibold">入力オプション：</span> スラッシュ(/) の代替記号として、縦棒 (|)、プラス (+)、アスタリスク (*) を使用することもできます。いずれも自動的にスラッシュに変換されます。
+        </p>
+        <p className="mt-1">
+          <span className="font-semibold">入力例：</span> 「ラ+ラ+ラ」 または 「ラ*ラ*ラ」 → 「ラ/ラ/ラ」
         </p>
         <p className="mt-1">
           <span className="font-semibold">ヒント：</span> 音節の区切りをより細かく設定すると、AIが音節を正確にマッチさせやすくなります。
