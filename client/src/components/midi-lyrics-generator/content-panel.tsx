@@ -2,7 +2,13 @@ import { FileText, ChevronLeft, ChevronRight, Copy, Check, Sparkles, AlertCircle
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Spinner } from '@/components/ui/spinner';
-import { Language, LyricsHistory } from './index';
+// We define types locally to avoid circular dependencies
+type Language = 'ja' | 'en';
+
+interface LyricsHistory {
+  lyrics: string;
+  timestamp: number;
+}
 
 interface ContentPanelProps {
   lyrics: string;

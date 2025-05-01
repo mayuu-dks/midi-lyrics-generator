@@ -8,7 +8,7 @@ import { useMidiAnalysis } from '@/hooks/use-midi-analysis';
 import { useLyricsGenerator } from '@/hooks/use-lyrics-generator';
 
 // Centralized language and mood options
-export const moodOptions = {
+const moodOptions = {
   ja: [
     '明るい', '切ない', '激しい', '穏やか', 
     'ロマンティック', '元気', '悲しい', '希望に満ちた',
@@ -21,9 +21,9 @@ export const moodOptions = {
   ]
 };
 
-export type Language = 'ja' | 'en';
+type Language = 'ja' | 'en';
 
-export interface LyricsHistory {
+interface LyricsHistory {
   lyrics: string;
   timestamp: number;
 }

@@ -3,8 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Language } from './index';
 import type { MidiAnalysis } from '@/hooks/use-midi-analysis';
+
+// We define types locally to avoid circular dependencies
+type Language = 'ja' | 'en';
 
 interface ControlPanelProps {
   language: Language;
@@ -38,7 +40,7 @@ export default function ControlPanel({
   generateAILyrics,
   moodOptions
 }: ControlPanelProps) {
-  const currentMoodOptions = moodOptions[language];
+  const currentMoodOptions = moodOptions[language as keyof typeof moodOptions];
   
   return (
     <div className="w-full lg:w-1/3 space-y-6">
@@ -124,7 +126,7 @@ export default function ControlPanel({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">{language === 'ja' ? '雰囲気を選択' : 'Select mood'}</SelectItem>
-              {currentMoodOptions.map((mood) => (
+              {currentMoodOptions.map((mood: string) => (
                 <SelectItem key={mood} value={mood}>
                   {mood}
                 </SelectItem>
