@@ -72,8 +72,15 @@ export default function TempLyricsEditor({
   // テキストエリアの変更を処理する関数
   const handleTempLyricsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
-    setTempLyrics(newValue);
-    onTempLyricsUpdate(newValue);
+    console.log('入力されたテキスト:', newValue); // デバッグ用
+    
+    // 一時的なスラッシュ入力問題の対策として、特殊文字を変換する
+    const processedValue = newValue
+      .replace(/\\\//g, '/') // エスケープされたスラッシュを通常のスラッシュに変換
+      .replace(/\|/g, '/');  // 縦棒をスラッシュに変換 (入力しやすい場合)
+    
+    setTempLyrics(processedValue);
+    onTempLyricsUpdate(processedValue);
   };
 
   // 元の仮歌詞に戻す関数
@@ -84,12 +91,27 @@ export default function TempLyricsEditor({
 
   // 仮歌詞にスラッシュで音節区切りを追加する関数
   const addSyllableDividers = () => {
-    // ダイレクトなアプローチ：ラ、ラー、ラーーの後にスラッシュを付ける
-    const words = tempLyrics.split(' ');
-    const withSlashes = words.join('/');
+    console.log('現在のテキスト:', tempLyrics); // デバッグ用
     
-    setTempLyrics(withSlashes);
-    onTempLyricsUpdate(withSlashes);
+    // 特殊文字を一旦置き換える方法
+    let result = '';
+    
+    for (let i = 0; i < tempLyrics.length; i++) {
+      // 現在の文字がスペースならスラッシュに変換
+      if (tempLyrics[i] === ' ') {
+        result += '/';
+      } else {
+        result += tempLyrics[i];
+      }
+    }
+    
+    console.log('変換後のテキスト:', result); // デバッグ用
+    
+    // 複数のスペースがある場合はスラッシュが複数になるので単一にする
+    const finalResult = result.replace(/\/+/g, '/');
+    
+    setTempLyrics(finalResult);
+    onTempLyricsUpdate(finalResult);
   };
 
   if (!isVisible || !midiData) return null;
@@ -116,6 +138,29 @@ export default function TempLyricsEditor({
           >
             区切り追加
           </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              // カーソル位置にスラッシュを挿入する機能を追加
+              const textarea = document.getElementById('temp_lyrics') as HTMLTextAreaElement;
+              if (textarea) {
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const newValue = tempLyrics.substring(0, start) + '/' + tempLyrics.substring(end);
+                setTempLyrics(newValue);
+                onTempLyricsUpdate(newValue);
+                
+                // カーソル位置を更新
+                setTimeout(() => {
+                  textarea.focus();
+                  textarea.setSelectionRange(start + 1, start + 1);
+                }, 0);
+              }
+            }}
+          >
+            / 挿入
+          </Button>
         </div>
       </div>
 
@@ -129,7 +174,7 @@ export default function TempLyricsEditor({
           value={tempLyrics}
           onChange={handleTempLyricsChange}
           className="font-mono text-sm"
-          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます"
+          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ/ラ/ラ)"
         />
       </div>
 
@@ -139,6 +184,9 @@ export default function TempLyricsEditor({
         </p>
         <p className="mt-1">
           <span className="font-semibold">例：</span> 「ラ ラ ラ ラ」→「ラ/ラ/ラ/ラ」
+        </p>
+        <p className="mt-1">
+          <span className="font-semibold">注意：</span> スラッシュ(/) が入力しにくい場合は、縦棒 (|) を使用することもできます。自動的にスラッシュに変換されます。
         </p>
         <p className="mt-1">
           <span className="font-semibold">ヒント：</span> 音節の区切りをより細かく設定すると、AIが音節を正確にマッチさせやすくなります。
