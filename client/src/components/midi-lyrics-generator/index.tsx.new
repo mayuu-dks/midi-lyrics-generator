@@ -77,6 +77,21 @@ export default function MidiLyricsGenerator() {
 
   const error = midiError || lyricsError;
 
+  // MIDIが読み込まれたら仮歌詞エディタを表示
+  useEffect(() => {
+    if (midiData) {
+      setShowTempLyricsEditor(true);
+    } else {
+      setShowTempLyricsEditor(false);
+      setCustomTempLyrics('');
+    }
+  }, [midiData]);
+
+  // 仮歌詞が更新されたらカスタム仮歌詞を保存
+  const handleTempLyricsUpdate = (tempLyrics: string) => {
+    setCustomTempLyrics(tempLyrics);
+  };
+
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'ja' ? 'en' : 'ja');
   };
@@ -113,6 +128,13 @@ export default function MidiLyricsGenerator() {
           </div>
         </div>
       </header>
+
+      {/* 仮歌詞エディタ */}
+      <TempLyricsEditor 
+        midiData={midiData}
+        onTempLyricsUpdate={handleTempLyricsUpdate}
+        isVisible={showTempLyricsEditor}
+      />
 
       {/* Main Content */}
       <main className="flex flex-col lg:flex-row gap-6">
@@ -171,5 +193,3 @@ export default function MidiLyricsGenerator() {
     </div>
   );
 }
-
-// End of component
