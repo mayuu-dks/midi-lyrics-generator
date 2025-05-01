@@ -101,23 +101,122 @@ export function useLyricsGenerator({
   
   // Generate prompt for AI based on MIDI data
   const generatePrompt = (midi: MidiAnalysis): { systemPrompt: string; userPrompt: string } => {
+    // 詳細な音符分析を行う
     const notesSummary = midi.notes
       .slice(0, 20) // Limit to first 20 notes for brevity
       .map(n => `${n.name}(${n.duration.toFixed(2)}s)`)
       .join(', ');
+    
+    // 音符の長さごとに分類
+    const notesByDuration = {
+      veryShort: 0, // 32分音符以下 (0.125秒以下)
+      short: 0,     // 16分音符 (0.125秒〜0.25秒)
+      eighth: 0,    // 8分音符 (0.25秒〜0.5秒)
+      quarter: 0,   // 4分音符 (0.5秒〜1.0秒)
+      half: 0,      // 2分音符 (1.0秒〜2.0秒)
+      whole: 0      // 全音符以上 (2.0秒以上)
+    };
+    
+    // 音符の長さに基づく記号表現の配列
+    const phrasePatterns: string[] = [];
+    
+    // 音符を長さに応じて分類
+    midi.notes.forEach(note => {
+      const duration = note.duration;
       
+      if (duration <= 0.125) {
+        notesByDuration.veryShort++;
+        phrasePatterns.push('ラ');
+      } else if (duration <= 0.25) {
+        notesByDuration.short++;
+        phrasePatterns.push('ラ');
+      } else if (duration <= 0.5) {
+        notesByDuration.eighth++;
+        phrasePatterns.push('ラ');
+      } else if (duration <= 1.0) {
+        notesByDuration.quarter++;
+        phrasePatterns.push('ラー');
+      } else if (duration <= 2.0) {
+        notesByDuration.half++;
+        phrasePatterns.push('ラーー');
+      } else {
+        notesByDuration.whole++;
+        phrasePatterns.push('ラーー');
+      }
+    });
+    
+    // フレーズのまとまりを作成（4音符ごとにグループ化）
+    const phrasesGrouped: string[] = [];
+    let currentPhrase: string[] = [];
+    
+    phrasePatterns.forEach((pattern, index) => {
+      currentPhrase.push(pattern);
+      if ((index + 1) % 4 === 0 || index === phrasePatterns.length - 1) {
+        phrasesGrouped.push(currentPhrase.join(' '));
+        currentPhrase = [];
+      }
+    });
+    
+    // 最終的なフレーズパターン文字列を生成
+    const fullPhrasePattern = phrasesGrouped.join('  ');
+    
     const moodText = songMood && songMood !== 'none' ? songMood : '指定なし';
     
-    const systemPrompt = `あなたはプロの作詞家です。提供されたMIDIファイルの分析情報に基づいて、感情豊かで、メロディに合った歌詞を生成してください。
+    const systemPrompt = `あなたはプロの作詞家です。提供されたMIDIファイルの分析情報に基づいて、メロディに完全に合った歌詞を生成してください。
 曲のタイトル: ${songTitle || '指定なし'}
 曲の雰囲気: ${moodText}
 歌詞の言語: ${language === 'ja' ? '日本語' : 'English'}`;
     
-    const userPrompt = `以下のMIDI分析情報に基づいて歌詞を生成してください：
+    const userPrompt = `音符パターンに完全に一致する歌詞を生成してください。
 
-ノート数: ${midi.noteCount}
-曲の長さ: ${midi.duration.toFixed(2)}秒
-平均ピッチ: ${midi.averagePitch.toFixed(2)}
+曲の設定:
+タイトル: ${songTitle || '指定なし'}
+イメージ: ${moodText}
+
+音符パターンの詳細:
+32分音符以下: ${notesByDuration.veryShort}個
+16分音符: ${notesByDuration.short}個
+8分音符: ${notesByDuration.eighth}個
+4分音符: ${notesByDuration.quarter}個
+2分音符: ${notesByDuration.half}個
+全音符以上: ${notesByDuration.whole}個
+
+絶対に守るべき制約：
+1. 音符数の厳密な一致:
+   - ${midi.noteCount}個の音符に対応する音節を生成すること
+   - 音符数の差異は許容しない
+   - 1音符に対して1音節を基本とする
+   - 音符の長さに応じて最大音節数が変化する
+
+2. 音符の長さと音節数の厳密な対応:
+   - 32分音符以下: 1音節のみ
+   - 16分音符: 1音節のみ
+   - 8分音符: 1音節のみ
+   - 4分音符: 最大2音節
+   - 2分音符: 最大2音節
+   - 全音符以上: 最大2音節
+
+3. 表現とフォーマット:
+   - 余計な説明や前置き、コメントを含めないこと
+   - 余分な文字や空白を追加しないこと
+   - 自然な${language === 'ja' ? '日本語' : '英語'}の流れを維持すること
+   - 前回の生成結果は考慮しないこと
+   - タイトルと曲調に合った内容にすること
+
+4. 音符パターンの順序と音節のまとまり:
+   以下の音節のまとまりに従って歌詞を生成してください。
+   スペースで区切られた各まとまりを1つのフレーズとして扱い、
+   それぞれのまとまりに対応する自然な歌詞を生成してください。
+
+仮歌詞の表記ルール:
+- 8分音符以下の短い音符: 「ラ」
+- 4分音符: 「ラー」
+- 2分音符以上: 「ラーー」
+- 1拍以上の休符: 「ッ」（前のフレーズの後に配置）
+
+現在のフレーズのまとまり:
+${fullPhrasePattern}
+
 最初のノートシーケンス (一部): ${notesSummary}
 
 指示:
