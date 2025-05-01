@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,7 @@ export default function TempLyricsEditor({
 }: TempLyricsEditorProps) {
   const [tempLyrics, setTempLyrics] = useState<string>('');
   const [originalTempLyrics, setOriginalTempLyrics] = useState<string>('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // MIDIデータが更新されたら仮歌詞を生成
   useEffect(() => {
@@ -69,16 +70,43 @@ export default function TempLyricsEditor({
     return phrasesGrouped.join('  ');
   };
 
+  // スラッシュキーを処理するためのキーダウンハンドラー
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // スラッシュキーが押された場合
+    if (e.key === '/' || e.code === 'Slash') {
+      e.preventDefault(); // デフォルトの動作をキャンセル
+      
+      const textarea = e.currentTarget;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      // 現在のテキストにスラッシュを挿入
+      const newValue = tempLyrics.substring(0, start) + '/' + tempLyrics.substring(end);
+      
+      // 値を更新
+      setTempLyrics(newValue);
+      onTempLyricsUpdate(newValue);
+      
+      // カーソル位置を更新 (スラッシュの後に移動)
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + 1, start + 1);
+      }, 0);
+      
+      return;
+    }
+  };
+  
   // テキストエリアの変更を処理する関数
   const handleTempLyricsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // テキストエリアの値の変更を直接取得
     const newValue = e.target.value;
-    console.log('入力されたテキスト:', newValue); // デバッグ用
+    console.log('入力されたテキスト:', newValue);
     
-    // 一時的なスラッシュ入力問題の対策として、特殊文字を変換する
-    const processedValue = newValue
-      .replace(/\\\//g, '/') // エスケープされたスラッシュを通常のスラッシュに変換
-      .replace(/\|/g, '/');  // 縦棒をスラッシュに変換 (入力しやすい場合)
+    // 縦棒をスラッシュに変換
+    const processedValue = newValue.replace(/\|/g, '/');
     
+    // プロセスされた値を設定
     setTempLyrics(processedValue);
     onTempLyricsUpdate(processedValue);
   };
@@ -143,8 +171,8 @@ export default function TempLyricsEditor({
             size="sm"
             onClick={() => {
               // カーソル位置にスラッシュを挿入する機能を追加
-              const textarea = document.getElementById('temp_lyrics') as HTMLTextAreaElement;
-              if (textarea) {
+              if (textareaRef.current) {
+                const textarea = textareaRef.current;
                 const start = textarea.selectionStart;
                 const end = textarea.selectionEnd;
                 const newValue = tempLyrics.substring(0, start) + '/' + tempLyrics.substring(end);
@@ -170,9 +198,11 @@ export default function TempLyricsEditor({
         </Label>
         <Textarea
           id="temp_lyrics"
+          ref={textareaRef}
           rows={4}
           value={tempLyrics}
           onChange={handleTempLyricsChange}
+          onKeyDown={handleKeyDown}  // キーダウンイベントをハンドリング
           className="font-mono text-sm"
           placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ/ラ/ラ)"
         />
