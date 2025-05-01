@@ -12,6 +12,7 @@ import {
 
 interface PromptPreviewModalProps {
   customPrompt: string;
+  userPrompt?: string;
   setCustomPrompt: (prompt: string) => void;
   onGenerate: () => void;
   onClose: () => void;
@@ -19,34 +20,55 @@ interface PromptPreviewModalProps {
 
 export default function PromptPreviewModal({
   customPrompt,
+  userPrompt,
   setCustomPrompt,
   onGenerate,
   onClose
 }: PromptPreviewModalProps) {
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BrainCircuit className="h-5 w-5" />
-            AIプロンプトの編集
+            AIプロンプト内容の確認
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            AIに指示するプロンプトをカスタマイズできます。歌詞の生成方法や特定のスタイルについての指示を記述できます。
+            以下の詳細なプロンプトを使用して歌詞を生成します。システムプロンプトは必要に応じて編集できます。
           </p>
           
-          <div>
-            <Label htmlFor="custom_prompt" className="mb-1 block">カスタムプロンプト</Label>
-            <Textarea
-              id="custom_prompt"
-              rows={8}
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              className="resize-none text-gray-800 dark:text-gray-200"
-            />
+          <div className="space-y-8">
+            {/* システムプロンプト */}
+            <div>
+              <Label htmlFor="custom_prompt" className="mb-1 block font-semibold text-base">システムプロンプト</Label>
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">
+                {customPrompt}
+              </div>
+              <div className="mt-4">
+                <Label htmlFor="edit_prompt" className="mb-1 block">システムプロンプトを編集：</Label>
+                <Textarea
+                  id="edit_prompt"
+                  rows={5}
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  className="resize-none text-gray-800 dark:text-gray-200 font-mono text-sm"
+                />
+              </div>
+            </div>
+            
+            {/* ユーザープロンプト */}
+            {userPrompt && (
+              <div>
+                <Label htmlFor="user_prompt" className="mb-1 block font-semibold text-base">詳細で強力なユーザープロンプト</Label>
+                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-80 overflow-y-auto">
+                  {userPrompt}
+                </div>
+                <p className="mt-2 text-xs text-gray-500">注意：この詳細プロンプトはMIDIデータに基づいて生成され、自動的に使用されます。編集はできません。</p>
+              </div>
+            )}
           </div>
         </div>
         

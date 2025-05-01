@@ -45,6 +45,7 @@ export function useLyricsGenerator({
   const [lyricsHistory, setLyricsHistory] = useState<LyricsHistory[]>([]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
   const [isCopied, setIsCopied] = useState(false);
+  const [currentUserPrompt, setCurrentUserPrompt] = useState<string>('');
   
   const openaiClientRef = useRef<OpenAI | null>(null);
   
