@@ -59,7 +59,8 @@ export default function MidiLyricsGenerator() {
     navigateHistory,
     copyLyrics,
     handleApiKeySubmit,
-    handleApiKeyDelete
+    handleApiKeyDelete,
+    currentUserPrompt
   } = useLyricsGenerator({
     midiData,
     currentFileName,
@@ -155,6 +156,7 @@ export default function MidiLyricsGenerator() {
       {showPromptPreview && (
         <PromptPreviewModal 
           customPrompt={customPrompt}
+          userPrompt={currentUserPrompt}
           setCustomPrompt={setCustomPrompt}
           onGenerate={() => {
             setShowPromptPreview(false);

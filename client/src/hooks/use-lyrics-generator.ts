@@ -45,7 +45,6 @@ export function useLyricsGenerator({
   const [lyricsHistory, setLyricsHistory] = useState<LyricsHistory[]>([]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
   const [isCopied, setIsCopied] = useState(false);
-  const [currentUserPrompt, setCurrentUserPrompt] = useState<string>('');
   
   const openaiClientRef = useRef<OpenAI | null>(null);
   
@@ -343,6 +342,24 @@ ${fullPhrasePattern}
     openaiClientRef.current = null;
   };
   
+  // 現在のプロンプト情報を追跡する変数
+  const [currentUserPrompt, setCurrentUserPrompt] = useState('');
+  
+  // ユーザープロンプトを更新する関数
+  const updateCurrentUserPrompt = useCallback((midi: MidiAnalysis) => {
+    if (midi) {
+      const prompts = generatePrompt(midi);
+      setCurrentUserPrompt(prompts.userPrompt);
+    }
+  }, [language, songTitle, songMood]);
+  
+  // MIDIデータが変更されたときにユーザープロンプトを更新
+  useEffect(() => {
+    if (midiData) {
+      updateCurrentUserPrompt(midiData);
+    }
+  }, [midiData, updateCurrentUserPrompt]);
+  
   return {
     lyrics,
     error,
@@ -356,6 +373,7 @@ ${fullPhrasePattern}
     navigateHistory,
     copyLyrics,
     handleApiKeySubmit,
-    handleApiKeyDelete
+    handleApiKeyDelete,
+    currentUserPrompt
   };
 }
