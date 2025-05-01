@@ -217,66 +217,64 @@ export default function TempLyricsEditor({
         <Label htmlFor="temp_lyrics" className="mb-1 block">
           仮歌詞を編集（スラッシュ(/)で音節を区切ることができます）：
         </Label>
-        {/* 純粋なHTMLテキストエリアを使用してuncontrolled componentとして実装 */}
-        <textarea
-          id="temp_lyrics"
-          ref={textareaRef}
-          rows={4}
-          defaultValue={tempLyrics}
-          onChange={handleTempLyricsChange}
-          onKeyDown={(e) => {
-            // キーコードのデバッグログ出力
-            console.log('押されたキー:', e.key, 'keyCode:', e.keyCode, 'code:', e.code);
-            
-            // スラッシュキーが押されたか確認
-            if (e.key === '/' || e.code === 'Slash') {
-              console.log('スラッシュキーが押されました');
-              
-              // IMEの影響やキーボードでの入力が出来ない場合を考慮して、手動で文字を挿入するオプションを追加
-              const textarea = e.currentTarget;
-              const start = textarea.selectionStart;
-              const end = textarea.selectionEnd;
-              
-              // この部分は必要に応じてコメント解除すると、自動文字挿入が有効になります
-              /*
-              // 現在のテキストにスラッシュを挿入
-              const currentValue = textarea.value;
-              const newValue = currentValue.substring(0, start) + '/' + currentValue.substring(end);
-              
-              // 状態を更新
-              setTempLyrics(newValue);
-              onTempLyricsUpdate(newValue);
-              
-              // DOMを直接操作して値を設定
-              textarea.value = newValue;
-              
-              // カーソル位置を更新
-              setTimeout(() => {
-                textarea.focus();
-                textarea.setSelectionRange(start + 1, start + 1);
-              }, 0);
-              
-              // 通常のキー入力を防止
-              e.preventDefault();
-              */
-            }
-            
-            // 縦棒キーもデバッグ
-            if (e.key === '|' || e.code === 'IntlBackslash') {
-              console.log('縦棒キーが押されました');
-            }
-          }}
-          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
-          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ/ラ/ラ)"
-        />
+
+        {/* 非常にシンプルなプレーンHTMLテキストエリアを使用 */}
+        <div className="relative">
+          <textarea
+            id="temp_lyrics"
+            ref={textareaRef}
+            rows={4}
+            defaultValue={tempLyrics}
+            onChange={handleTempLyricsChange}
+            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+            placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ/ラ/ラ)"
+          />
+
+          {/* クイックアクションボタン - テキストエリア内に配置 */}
+          <div className="absolute bottom-3 right-3 flex gap-1 z-10">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-full bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              onClick={() => {
+                if (textareaRef.current) {
+                  const textarea = textareaRef.current;
+                  const start = textarea.selectionStart;
+                  const end = textarea.selectionEnd;
+                  
+                  // 現在のテキストにスラッシュを挿入
+                  const currentValue = textarea.value;
+                  const newValue = currentValue.substring(0, start) + '/' + currentValue.substring(end);
+                  
+                  // 状態を更新
+                  setTempLyrics(newValue);
+                  onTempLyricsUpdate(newValue);
+                  
+                  // DOMを直接操作して値を設定
+                  textarea.value = newValue;
+                  
+                  // カーソル位置を更新
+                  setTimeout(() => {
+                    textarea.focus();
+                    textarea.setSelectionRange(start + 1, start + 1);
+                  }, 0);
+                }
+              }}
+            >
+              /
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <p>
-          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、スペースの代わりにスラッシュ(/)を手動で入力するか、「/ 文字挿入」ボタンを使用します。
+          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、次の方法があります：
         </p>
         <p className="mt-1">
-          <span className="font-semibold">ボタン機能：</span> 「スペース→/変換」ボタンをクリックすると、すべてのスペースがスラッシュに変換されます。
+          <span className="font-semibold">1. インラインボタン：</span> テキストエリア内の右下にある <span className="inline-block px-2 py-1 rounded-full bg-primary text-white text-xs">/</span> ボタンをクリックすると、カーソル位置にスラッシュが挿入されます。
+        </p>
+        <p className="mt-1">
+          <span className="font-semibold">2. 一括変換：</span> 「スペース→/変換」ボタンをクリックすると、すべてのスペースがスラッシュに変換されます。
         </p>
         <p className="mt-1">
           <span className="font-semibold">例：</span> 「ラ ラ ラ ラ」→「ラ/ラ/ラ/ラ」
