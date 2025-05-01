@@ -66,7 +66,7 @@ export default function PromptPreviewModal({
                 <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-80 overflow-y-auto">
                   {userPrompt}
                 </div>
-                <p className="mt-2 text-xs text-gray-500">注意：この詳細プロンプトはMIDIデータに基づいて生成され、自動的に使用されます。編集はできません。</p>
+                <p className="mt-2 text-xs text-gray-500">注意：この詳細プロンプトはMIDIデータと仮歌詞に基づいて生成され、自動的に使用されます。仮歌詞ではカンマ(,)が音節の区切りとして使用されています。このプロンプトは編集できません。</p>
               </div>
             )}
           </div>
