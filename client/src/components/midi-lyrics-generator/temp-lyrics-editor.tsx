@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+// テキストエリアコンポーネントを使用しない
+// import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Music } from 'lucide-react';
 import { MidiAnalysis } from '@/hooks/use-midi-analysis';
@@ -27,6 +28,11 @@ export default function TempLyricsEditor({
       setTempLyrics(generatedTemp);
       setOriginalTempLyrics(generatedTemp);
       onTempLyricsUpdate(generatedTemp);
+      
+      // refがある場合は、テキストエリアの値も直接更新
+      if (textareaRef.current) {
+        textareaRef.current.value = generatedTemp;
+      }
     }
   }, [midiData, onTempLyricsUpdate]);
 
@@ -80,12 +86,18 @@ export default function TempLyricsEditor({
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       
-      // 現在のテキストにスラッシュを挿入
-      const newValue = tempLyrics.substring(0, start) + '/' + tempLyrics.substring(end);
+      // 現在の値を直接取得
+      const currentValue = textarea.value;
       
-      // 値を更新
+      // 現在のテキストにスラッシュを挿入
+      const newValue = currentValue.substring(0, start) + '/' + currentValue.substring(end);
+      
+      // 状態を更新
       setTempLyrics(newValue);
       onTempLyricsUpdate(newValue);
+      
+      // DOMを直接操作して値を設定
+      textarea.value = newValue;
       
       // カーソル位置を更新 (スラッシュの後に移動)
       setTimeout(() => {
@@ -106,40 +118,69 @@ export default function TempLyricsEditor({
     // 縦棒をスラッシュに変換
     const processedValue = newValue.replace(/\|/g, '/');
     
-    // プロセスされた値を設定
+    // 状態を更新
     setTempLyrics(processedValue);
     onTempLyricsUpdate(processedValue);
+    
+    // 縦棒が含まれていた場合は、DOMも直接更新
+    if (newValue !== processedValue && textareaRef.current) {
+      // カーソル位置を保存
+      const start = e.target.selectionStart;
+      const end = e.target.selectionEnd;
+      
+      // 直接DOMを操作して値を設定
+      textareaRef.current.value = processedValue;
+      
+      // カーソル位置を元に戻す
+      setTimeout(() => {
+        textareaRef.current?.setSelectionRange(start, end);
+      }, 0);
+    }
   };
 
   // 元の仮歌詞に戻す関数
   const resetToOriginal = () => {
+    // 状態を更新
     setTempLyrics(originalTempLyrics);
     onTempLyricsUpdate(originalTempLyrics);
+    
+    // DOMを直接操作してテキストエリアの値を設定
+    if (textareaRef.current) {
+      textareaRef.current.value = originalTempLyrics;
+    }
   };
 
   // 仮歌詞にスラッシュで音節区切りを追加する関数
   const addSyllableDividers = () => {
-    console.log('現在のテキスト:', tempLyrics); // デバッグ用
+    if (!textareaRef.current) return;
+
+    // 直接テキストエリアから値を取得
+    const currentText = textareaRef.current.value;
+    console.log('現在のテキスト:', currentText);
     
     // 特殊文字を一旦置き換える方法
     let result = '';
     
-    for (let i = 0; i < tempLyrics.length; i++) {
+    for (let i = 0; i < currentText.length; i++) {
       // 現在の文字がスペースならスラッシュに変換
-      if (tempLyrics[i] === ' ') {
+      if (currentText[i] === ' ') {
         result += '/';
       } else {
-        result += tempLyrics[i];
+        result += currentText[i];
       }
     }
     
-    console.log('変換後のテキスト:', result); // デバッグ用
+    console.log('変換後のテキスト:', result);
     
     // 複数のスペースがある場合はスラッシュが複数になるので単一にする
     const finalResult = result.replace(/\/+/g, '/');
     
+    // 状態を更新
     setTempLyrics(finalResult);
     onTempLyricsUpdate(finalResult);
+    
+    // 直接DOMを操作してテキストエリアの値を設定
+    textareaRef.current.value = finalResult;
   };
 
   if (!isVisible || !midiData) return null;
@@ -175,9 +216,17 @@ export default function TempLyricsEditor({
                 const textarea = textareaRef.current;
                 const start = textarea.selectionStart;
                 const end = textarea.selectionEnd;
-                const newValue = tempLyrics.substring(0, start) + '/' + tempLyrics.substring(end);
+                
+                // 現在の値を直接取得
+                const currentValue = textarea.value;
+                const newValue = currentValue.substring(0, start) + '/' + currentValue.substring(end);
+                
+                // 状態を更新
                 setTempLyrics(newValue);
                 onTempLyricsUpdate(newValue);
+                
+                // DOMを直接操作して値を設定
+                textarea.value = newValue;
                 
                 // カーソル位置を更新
                 setTimeout(() => {
@@ -196,14 +245,15 @@ export default function TempLyricsEditor({
         <Label htmlFor="temp_lyrics" className="mb-1 block">
           仮歌詞を編集（スラッシュ(/)で音節を区切ることができます）：
         </Label>
-        <Textarea
+        {/* 純粋なHTMLテキストエリアを使用してuncontrolled componentとして実装 */}
+        <textarea
           id="temp_lyrics"
           ref={textareaRef}
           rows={4}
-          value={tempLyrics}
+          defaultValue={tempLyrics}
           onChange={handleTempLyricsChange}
-          onKeyDown={handleKeyDown}  // キーダウンイベントをハンドリング
-          className="font-mono text-sm"
+          onKeyDown={handleKeyDown}
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
           placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ/ラ/ラ)"
         />
       </div>
