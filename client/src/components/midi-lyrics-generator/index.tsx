@@ -156,7 +156,10 @@ export default function MidiLyricsGenerator() {
         <PromptPreviewModal 
           customPrompt={customPrompt}
           setCustomPrompt={setCustomPrompt}
-          onGenerate={() => generateAILyrics(true)}
+          onGenerate={() => {
+            setShowPromptPreview(false);
+            generateAILyrics(true);
+          }}
           onClose={() => setShowPromptPreview(false)}
         />
       )}
