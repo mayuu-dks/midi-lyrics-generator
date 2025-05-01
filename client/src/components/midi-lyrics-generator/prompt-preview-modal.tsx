@@ -45,7 +45,7 @@ export default function PromptPreviewModal({
               rows={8}
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
-              className="resize-none"
+              className="resize-none text-gray-800 dark:text-gray-200"
             />
           </div>
         </div>
