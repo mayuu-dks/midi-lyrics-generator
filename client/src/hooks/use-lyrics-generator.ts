@@ -168,9 +168,9 @@ export function useLyricsGenerator({
     const systemContent = useEditedPrompt ? customPrompt : prompts.systemPrompt;
     const userContent = prompts.userPrompt;
     
-    // If not using edited prompt and customPrompt is empty, set it and show preview
-    if (!useEditedPrompt && !customPrompt) {
-      setCustomPrompt(systemContent); // Set the default system prompt for editing
+    // Always show prompt preview when not explicitly using edited prompt
+    if (!useEditedPrompt) {
+      setCustomPrompt(systemContent); // Set the system prompt for editing
       setShowPromptPreview(true);
       return;
     }
