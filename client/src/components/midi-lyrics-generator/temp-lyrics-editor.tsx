@@ -17,22 +17,20 @@ export default function TempLyricsEditor({
   onTempLyricsUpdate,
   isVisible
 }: TempLyricsEditorProps) {
+  // Reactの状態として仮歌詞を管理（単一の情報源）
   const [tempLyrics, setTempLyrics] = useState<string>('');
   const [originalTempLyrics, setOriginalTempLyrics] = useState<string>('');
+  // フォーカス制御のためだけにrefを使用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // MIDIデータが更新されたら仮歌詞を生成
   useEffect(() => {
     if (midiData) {
       const generatedTemp = generateTempLyrics(midiData);
+      // ステートのみを更新（DOMの直接操作は行わない）
       setTempLyrics(generatedTemp);
       setOriginalTempLyrics(generatedTemp);
       onTempLyricsUpdate(generatedTemp);
-      
-      // refがある場合は、テキストエリアの値も直接更新
-      if (textareaRef.current) {
-        textareaRef.current.value = generatedTemp;
-      }
     }
   }, [midiData, onTempLyricsUpdate]);
 
@@ -78,7 +76,7 @@ export default function TempLyricsEditor({
 
   // テキストエリアの変更を処理する関数
   const handleTempLyricsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // 新しい値を単純に設定
+    // 新しい値をステートにのみ設定（DOMの直接操作は行わない）
     const newValue = e.target.value;
     setTempLyrics(newValue);
     onTempLyricsUpdate(newValue);
@@ -86,13 +84,15 @@ export default function TempLyricsEditor({
 
   // 元の仮歌詞に戻す関数
   const resetToOriginal = () => {
-    // 状態を更新
+    // ステートを更新（DOMの直接操作は行わない）
     setTempLyrics(originalTempLyrics);
     onTempLyricsUpdate(originalTempLyrics);
-    
-    // DOMを直接操作してテキストエリアの値を設定
+  };
+
+  // フォーカス制御用の関数（オプション）
+  const focusTextarea = () => {
     if (textareaRef.current) {
-      textareaRef.current.value = originalTempLyrics;
+      textareaRef.current.focus();
     }
   };
 
@@ -121,11 +121,12 @@ export default function TempLyricsEditor({
           仮歌詞を編集（カンマ(,)で音節を区切ることができます）：
         </Label>
 
+        {/* 重要な変更: defaultValueの代わりにvalueを使用して完全なcontrolled componentにする */}
         <textarea
           id="temp_lyrics"
           ref={textareaRef}
           rows={4}
-          defaultValue={tempLyrics}
+          value={tempLyrics} // defaultValueからvalueに変更
           onChange={handleTempLyricsChange}
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
           placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ,ラ,ラ)"
