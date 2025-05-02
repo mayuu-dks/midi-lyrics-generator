@@ -73,13 +73,13 @@ export default function TempLyricsEditor({
     phrasePatterns.forEach((pattern, index) => {
       currentPhrase.push(pattern);
       if ((index + 1) % 4 === 0 || index === phrasePatterns.length - 1) {
-        phrasesGrouped.push(currentPhrase.join(' ')); // カンマ区切りではなくスペース区切りに変更
+        phrasesGrouped.push(currentPhrase.join('')); // スペースを入れずに結合
         currentPhrase = [];
       }
     });
     
     // 最終的なフレーズパターン文字列を生成
-    return phrasesGrouped.join('  ');
+    return phrasesGrouped.join('');  // スペースを入れずに結合
   };
 
   // テキストエリアの変更を処理する関数
@@ -176,16 +176,16 @@ export default function TempLyricsEditor({
           onFocus={handleFocus}
           onBlur={handleBlur}
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
-          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ ラ ラ)"
+          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラララ)"
         />
       </div>
 
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <p>
-          <span className="font-semibold">使い方：</span> メロディと歌詞の文節の区切りを調整したい場合は、必要に応じてカンマ(,)を手動で入力してください。仮歌詞はスペースで区切られて生成されます。
+          <span className="font-semibold">使い方：</span> メロディと歌詞の文節の区切りを調整したい場合は、必要に応じてカンマ(,)を手動で入力してください。
         </p>
         <p className="mt-1">
-          <span className="font-semibold">例：</span> 「ラ ラ ラ」 → 「ラ,ラ ラ」 (最初の二つが一つの文節として扱われる)
+          <span className="font-semibold">例：</span> 「ラララ」 → 「ラ,ララ」 (最初の二つが一つの文節として扱われる)
         </p>
         <p className="mt-1">
           <span className="font-semibold">ヒント：</span> カンマは「ここが文節の区切り」とAIに伝えるためのもので、適切に設定すると歌詞とメロディがより自然に合うようになります。
