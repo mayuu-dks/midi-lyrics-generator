@@ -1,4 +1,5 @@
-import { BrainCircuit } from 'lucide-react';
+import { useState } from 'react';
+import { BrainCircuit, ClipboardCopy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -25,6 +26,25 @@ export default function PromptPreviewModal({
   onGenerate,
   onClose
 }: PromptPreviewModalProps) {
+  const [copiedSystem, setCopiedSystem] = useState(false);
+  const [copiedUser, setCopiedUser] = useState(false);
+
+  // プロンプトをクリップボードにコピーする関数
+  const copyToClipboard = async (text: string, type: 'system' | 'user') => {
+    try {
+      await navigator.clipboard.writeText(text);
+      if (type === 'system') {
+        setCopiedSystem(true);
+        setTimeout(() => setCopiedSystem(false), 2000);
+      } else {
+        setCopiedUser(true);
+        setTimeout(() => setCopiedUser(false), 2000);
+      }
+    } catch (err) {
+      console.error('クリップボードへのコピーに失敗しました:', err);
+    }
+  };
+  
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl max-h-screen overflow-y-auto">
@@ -43,7 +63,27 @@ export default function PromptPreviewModal({
           <div className="space-y-8">
             {/* システムプロンプト */}
             <div>
-              <Label htmlFor="custom_prompt" className="mb-1 block font-semibold text-base">システムプロンプト</Label>
+              <div className="flex justify-between items-center mb-1">
+                <Label htmlFor="custom_prompt" className="font-semibold text-base">システムプロンプト</Label>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-2 text-gray-500 hover:text-gray-700"
+                  onClick={() => copyToClipboard(customPrompt, 'system')}
+                >
+                  {copiedSystem ? (
+                    <>
+                      <Check className="h-4 w-4 mr-1" />
+                      コピー済み
+                    </>
+                  ) : (
+                    <>
+                      <ClipboardCopy className="h-4 w-4 mr-1" />
+                      コピー
+                    </>
+                  )}
+                </Button>
+              </div>
               <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">
                 {customPrompt}
               </div>
@@ -62,7 +102,27 @@ export default function PromptPreviewModal({
             {/* ユーザープロンプト */}
             {userPrompt && (
               <div>
-                <Label htmlFor="user_prompt" className="mb-1 block font-semibold text-base">詳細で強力なユーザープロンプト</Label>
+                <div className="flex justify-between items-center mb-1">
+                  <Label htmlFor="user_prompt" className="font-semibold text-base">詳細で強力なユーザープロンプト</Label>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-2 text-gray-500 hover:text-gray-700"
+                    onClick={() => copyToClipboard(userPrompt, 'user')}
+                  >
+                    {copiedUser ? (
+                      <>
+                        <Check className="h-4 w-4 mr-1" />
+                        コピー済み
+                      </>
+                    ) : (
+                      <>
+                        <ClipboardCopy className="h-4 w-4 mr-1" />
+                        コピー
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-80 overflow-y-auto">
                   {userPrompt}
                 </div>
@@ -70,6 +130,10 @@ export default function PromptPreviewModal({
               </div>
             )}
           </div>
+        </div>
+        
+        <div className="mt-4 text-xs text-gray-500 border-t pt-2">
+          <p>※ APIキーを設定していない場合は、上記のプロンプトをコピーして別のAIサービスで使用できます。</p>
         </div>
         
         <DialogFooter className="sm:justify-end">
