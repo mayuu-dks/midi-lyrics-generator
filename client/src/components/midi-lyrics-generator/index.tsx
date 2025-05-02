@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Music, Globe, Settings, HelpCircle } from 'lucide-react';
+import GoogleAdsense from '../GoogleAdsense';
 import ControlPanel from './control-panel';
 import ContentPanel from './content-panel';
 import SettingsModal from './settings-modal';
