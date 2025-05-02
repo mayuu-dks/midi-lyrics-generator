@@ -137,6 +137,17 @@ export default function TempLyricsEditor({
           >
             元に戻す
           </Button>
+          <Button 
+            variant="default" 
+            size="sm"
+            onClick={() => {
+              onTempLyricsUpdate(tempLyrics);
+              // 更新が行われたことをユーザーに表示
+              alert('仮歌詞の変更がプロンプトに反映されました。生成ボタンをクリックして歌詞を生成してください。');
+            }}
+          >
+            区切りをプロンプトに反映
+          </Button>
         </div>
       </div>
 
@@ -168,6 +179,9 @@ export default function TempLyricsEditor({
         </p>
         <p className="mt-1">
           <span className="font-semibold">ヒント：</span> カンマは「ここが文節の区切り」とAIに伝えるためのもので、適切に設定すると歌詞とメロディがより自然に合うようになります。
+        </p>
+        <p className="mt-1">
+          <span className="font-semibold">重要：</span> カンマを追加した後は、「区切りをプロンプトに反映」ボタンをクリックしてから生成を行ってください。これによりAIにメロディと文節の区切りが正しく伝わります。
         </p>
       </div>
     </div>
