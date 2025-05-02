@@ -223,7 +223,7 @@ export default function TempLyricsEditor({
           <span className="font-semibold">使い方：</span> メロディと歌詞の文節の区切りを調整したい場合は、必要に応じてカンマ(,)を手動で入力してください。
         </p>
         <p className="mt-1">
-          <span className="font-semibold">例：</span> 「ラララ」 → 「ラ,ララ」 (最初の二つが一つの文節として扱われる)
+          <span className="font-semibold">例：</span> 「ラララ」→一文節として扱われます。「ララ,ラ」→二文節として扱われます。
         </p>
         <p className="mt-1">
           <span className="font-semibold">ヒント：</span> カンマは「ここが文節の区切り」とAIに伝えるためのもので、適切に設定すると歌詞とメロディがより自然に合うようになります。
