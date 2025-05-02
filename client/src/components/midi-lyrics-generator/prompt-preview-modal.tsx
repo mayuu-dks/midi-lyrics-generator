@@ -83,9 +83,9 @@ export default function PromptPreviewModal({
           <Button 
             type="button" 
             onClick={onGenerate}
-            className="bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-2 text-base flex items-center gap-2"
+            variant="default"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1 rounded-md"
           >
-            <BrainCircuit className="h-5 w-5" />
             このプロンプトで生成
           </Button>
         </DialogFooter>
