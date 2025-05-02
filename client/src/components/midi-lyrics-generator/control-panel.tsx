@@ -142,7 +142,7 @@ export default function ControlPanel({
           disabled={!midiData}
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {language === 'ja' ? 'AIで歌詞を生成' : 'Generate Lyrics with AI'}
+          {language === 'ja' ? 'プロンプトを生成' : 'Generate Prompt'}
         </Button>
       </div>
     </div>
