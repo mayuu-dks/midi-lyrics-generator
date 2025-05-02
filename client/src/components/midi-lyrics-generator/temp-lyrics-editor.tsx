@@ -67,7 +67,7 @@ export default function TempLyricsEditor({
     phrasePatterns.forEach((pattern, index) => {
       currentPhrase.push(pattern);
       if ((index + 1) % 4 === 0 || index === phrasePatterns.length - 1) {
-        phrasesGrouped.push(currentPhrase.join(' ')); // カンマを使わずスペースで区切る
+        phrasesGrouped.push(currentPhrase.join(','));
         currentPhrase = [];
       }
     });
@@ -118,7 +118,7 @@ export default function TempLyricsEditor({
 
       <div>
         <Label htmlFor="temp_lyrics" className="mb-1 block">
-          仮歌詞を自由に編集（音節の区切りを自由に設定できます）：
+          仮歌詞を編集（カンマ(,)で音節を区切ることができます）：
         </Label>
 
         <textarea
@@ -128,16 +128,19 @@ export default function TempLyricsEditor({
           defaultValue={tempLyrics}
           onChange={handleTempLyricsChange}
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
-          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます"
+          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ,ラ,ラ)"
         />
       </div>
 
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <p>
-          <span className="font-semibold">使い方：</span> テキストエリアを自由に編集して音節の区切りを調整してください。
+          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、カンマ(,)を手動で入力してください。
         </p>
         <p className="mt-1">
-          <span className="font-semibold">ヒント：</span> 音節の区切りが明確なほど、AIが音節を正確にマッチさせやすくなります。
+          <span className="font-semibold">例：</span> 「ラ,ラ,ラ,ラ」
+        </p>
+        <p className="mt-1">
+          <span className="font-semibold">ヒント：</span> 音節の区切りをより細かく設定すると、AIが音節を正確にマッチさせやすくなります。
         </p>
       </div>
     </div>
