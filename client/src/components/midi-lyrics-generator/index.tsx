@@ -235,6 +235,7 @@ export default function MidiLyricsGenerator() {
             generateAILyrics(true);
           }}
           onClose={() => setShowPromptPreview(false)}
+          apiKey={apiKey}
         />
       )}
     </div>

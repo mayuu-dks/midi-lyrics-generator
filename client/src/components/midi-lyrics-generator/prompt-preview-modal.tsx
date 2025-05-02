@@ -17,6 +17,7 @@ interface PromptPreviewModalProps {
   setCustomPrompt: (prompt: string) => void;
   onGenerate: () => void;
   onClose: () => void;
+  apiKey?: string; // APIキーが設定されているかチェックするために追加
 }
 
 export default function PromptPreviewModal({
@@ -24,7 +25,8 @@ export default function PromptPreviewModal({
   userPrompt,
   setCustomPrompt,
   onGenerate,
-  onClose
+  onClose,
+  apiKey
 }: PromptPreviewModalProps) {
   const [copiedSystem, setCopiedSystem] = useState(false);
   const [copiedUser, setCopiedUser] = useState(false);
@@ -182,9 +184,10 @@ ${userPrompt || ''}`;
             type="button" 
             onClick={onGenerate}
             variant="default"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1 rounded-md"
+            disabled={!apiKey || apiKey.trim() === ''}
+            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1 rounded-md ${!apiKey || apiKey.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            このプロンプトで生成
+            {!apiKey || apiKey.trim() === '' ? 'APIキーを設定してください' : 'このプロンプトで生成'}
           </Button>
         </DialogFooter>
       </DialogContent>
