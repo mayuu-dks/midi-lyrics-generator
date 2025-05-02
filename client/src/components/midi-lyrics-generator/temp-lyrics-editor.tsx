@@ -22,6 +22,8 @@ export default function TempLyricsEditor({
   const [originalTempLyrics, setOriginalTempLyrics] = useState<string>('');
   // ユーザーが編集中かどうかの状態管理
   const [isUserEditing, setIsUserEditing] = useState<boolean>(false);
+  // ユーザーがカンマを追加したかどうかを追跡
+  const [userHasModifiedLyrics, setUserHasModifiedLyrics] = useState<boolean>(false);
   // フォーカス制御のためだけにrefを使用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -30,15 +32,15 @@ export default function TempLyricsEditor({
     if (midiData) {
       const generatedTemp = generateTempLyrics(midiData);
       
-      // ユーザーが編集中でない場合のみ更新
-      if (!isUserEditing) {
+      // ユーザーが編集した内容がある場合は上書きしない
+      if (!userHasModifiedLyrics) {
         // ステートのみを更新（DOMの直接操作は行わない）
         setTempLyrics(generatedTemp);
         setOriginalTempLyrics(generatedTemp);
         onTempLyricsUpdate(generatedTemp);
       }
     }
-  }, [midiData, onTempLyricsUpdate, isUserEditing]);
+  }, [midiData, onTempLyricsUpdate, userHasModifiedLyrics]);
 
   // 音符データに基づいて仮歌詞を生成する関数
   const generateTempLyrics = (midi: MidiAnalysis): string => {
@@ -85,10 +87,15 @@ export default function TempLyricsEditor({
     // ユーザーが編集を開始したことを記録
     setIsUserEditing(true);
     
-    // 新しい値をステートにのみ設定（DOMの直接操作は行わない）
+    // ユーザーがカンマを追加したかチェック
     const newValue = e.target.value;
+    // 元の文字列と異なり、カンマを含む場合はユーザーが編集したと見なす
+    if (newValue.includes(',')) {
+      setUserHasModifiedLyrics(true);
+    }
+    
+    // 新しい値をステートにのみ設定（DOMの直接操作は行わない）
     setTempLyrics(newValue);
-    onTempLyricsUpdate(newValue);
   };
   
   // フォーカスイベントハンドラ
@@ -141,10 +148,13 @@ export default function TempLyricsEditor({
             variant="default" 
             size="sm"
             onClick={() => {
+              // 更新した値を親コンポーネントに通知
               onTempLyricsUpdate(tempLyrics);
               // 更新が行われたことをユーザーに表示
               alert('仮歌詞の変更がプロンプトに反映されました。生成ボタンをクリックして歌詞を生成してください。');
             }}
+            disabled={!userHasModifiedLyrics} // ユーザーがカンマを追加していない場合はボタンを無効化
+            title={userHasModifiedLyrics ? '変更を反映します' : 'カンマを追加してからクリックしてください'}
           >
             区切りをプロンプトに反映
           </Button>
