@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Music, Globe, Settings } from 'lucide-react';
+import { Music, Globe, Settings, HelpCircle } from 'lucide-react';
 import ControlPanel from './control-panel';
 import ContentPanel from './content-panel';
 import SettingsModal from './settings-modal';
@@ -213,6 +213,67 @@ export default function MidiLyricsGenerator() {
           language={language}
         />
       </main>
+
+      {/* FAQ Section */}
+      <div className="mt-12 mb-8 max-w-4xl mx-auto">
+        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white flex items-center gap-2">
+          <HelpCircle size={20} />
+          {language === 'ja' ? 'よくある質問' : 'Frequently Asked Questions'}
+        </h2>
+        
+        <div className="space-y-4">
+          <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              {language === 'ja' ? 'Q: このアプリをDeployすると、どこのサーバーに公開されるの？' : 'Q: Where is this app deployed when using the Deploy button?'}
+            </h3>
+            <div className="text-gray-700 dark:text-gray-300">
+              {language === 'ja' ? (
+                <p>
+                  このアプリをDeployすると、Replitのホスティングサービスである「Replit Deployments」で公開されます。公開されると、<code>.replit.app</code>というドメイン（例：あなたのアプリ名.replit.app）でアクセスできるようになります。Replitの特徴として：(1) サーバー運用の心配なく、ワンクリックでデプロイ (2) 自動的にHTTPS対応 (3) 自動スケーリング管理 (4) アプリのビルドとホスティングを自動処理 (5) 必要に応じて独自ドメインの設定も可能。このアプリはブラウザ上で動作するので、Replit上でホストされていても、処理はほとんどユーザーのブラウザで行われます。
+                </p>
+              ) : (
+                <p>
+                  When deployed, this app is hosted on Replit's hosting service called "Replit Deployments". It becomes accessible via a <code>.replit.app</code> domain (e.g., yourappname.replit.app). Replit features include: (1) One-click deployment without server management concerns (2) Automatic HTTPS support (3) Automatic scaling management (4) Automatic app building and hosting (5) Option to set up a custom domain if needed. Since this app runs in the browser, most processing occurs in the user's browser even though it's hosted on Replit.
+                </p>
+              )}
+            </div>
+          </div>
+          
+          <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              {language === 'ja' ? 'Q: 設定したAPIキーはどこに保存されるの？' : 'Q: Where are the API keys stored?'}
+            </h3>
+            <div className="text-gray-700 dark:text-gray-300">
+              {language === 'ja' ? (
+                <p>
+                  APIキーはブラウザの「localStorage」に保存されます。これは以下の特徴があります：(1) ローカルストレージはブラウザ内に保存されるため、サーバーには送信されません (2) 同じブラウザ・同じデバイスでアプリを再度開いた場合に自動的に読み込まれます (3) 異なるブラウザやデバイス、またはプライベートモード/シークレットモードでは保存されません (4) ブラウザの履歴やキャッシュをクリアした場合は削除されます。セキュリティの観点では、APIキーはユーザーのデバイス内のみに保存され、アプリのサーバーサイドには保存されないため、サーバー側でのデータ漏洩リスクはありません。公共のコンピュータを使用する場合は、使用後にAPIキーを削除することをお勧めします。
+                </p>
+              ) : (
+                <p>
+                  API keys are stored in the browser's "localStorage". This has the following characteristics: (1) LocalStorage is saved within the browser and not sent to any server (2) It automatically loads when you open the app again in the same browser on the same device (3) It's not preserved across different browsers, devices, or when using private/incognito mode (4) It's deleted when browser history or cache is cleared. From a security perspective, API keys are stored only on the user's device and not on the app's server side, eliminating the risk of data leaks from the server. If using a public computer, it's recommended to delete the API key after use.
+                </p>
+              )}
+            </div>
+          </div>
+          
+          <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              {language === 'ja' ? 'Q: アップロードしたMIDIファイルはどこに送られるの？' : 'Q: Where are uploaded MIDI files sent?'}
+            </h3>
+            <div className="text-gray-700 dark:text-gray-300">
+              {language === 'ja' ? (
+                <p>
+                  アップロードされたMIDIファイルは、ブラウザ内でのみ処理され、どこのサーバーにも送信されません。具体的には：(1) ファイルはブラウザのメモリ上に読み込まれます (2) ブラウザ内でMIDIファイルを解析・分析します (3) 分析結果（音符の数、長さ、ピッチなど）のみがアプリ内で利用されます (4) MIDIファイル自体は保存されず、ブラウザのメモリ上にのみ一時的に存在します (5) ブラウザを閉じるか、ページをリロードすると、読み込まれたMIDIデータは消去されます。このシステムはプライバシーとセキュリティを考慮して設計されており、MIDIファイルデータが外部に送信されることはありません。
+                </p>
+              ) : (
+                <p>
+                  Uploaded MIDI files are processed only within the browser and are not sent to any server. Specifically: (1) Files are loaded into the browser's memory (2) MIDI files are parsed and analyzed within the browser (3) Only the analysis results (number of notes, duration, pitch, etc.) are used within the app (4) The MIDI file itself is not saved and exists temporarily only in the browser's memory (5) When the browser is closed or the page is reloaded, the loaded MIDI data is erased. This system is designed with privacy and security in mind, ensuring that MIDI file data is never transmitted externally.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Modals */}
       {showSettings && (
