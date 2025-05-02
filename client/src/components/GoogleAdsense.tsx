@@ -27,7 +27,7 @@ export default function GoogleAdsense({
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
-        data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" // あなたのアドセンスID
+        data-ad-client="ca-pub-8761387357073771" // 実際のアドセンスID
         data-ad-slot={slot || undefined}
         data-ad-format={format}
         data-full-width-responsive="true"
