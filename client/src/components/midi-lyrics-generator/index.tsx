@@ -140,14 +140,24 @@ export default function MidiLyricsGenerator() {
         <div className="mt-4 p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-sm">
           <div className="font-medium mb-1 text-blue-800 dark:text-blue-300">
             {language === 'ja' 
-              ? 'MIDIファイルから歌詞を自動生成するツール' 
-              : 'Generate lyrics from MIDI files'}
+              ? 'MIDIファイルから日本語/英語の歌詞を自動生成するツール' 
+              : 'Generate Japanese/English lyrics from MIDI files'}
           </div>
           <p className="text-gray-700 dark:text-gray-300">
             {language === 'ja'
-              ? 'MIDIファイルをアップロードして、AIを使用してメロディに合った歌詞を生成します。OpenAI APIキーの設定がなくても、プロンプトを生成してコピーし、他のAIサービスで使用できます。'
-              : 'Upload a MIDI file and generate lyrics that match the melody using AI. Even without an OpenAI API key, you can generate and copy the prompts to use with other AI services.'}
+              ? 'MIDIファイルをアップロードして、最新のAIモデル（OpenAI GPT-4o）を使用してメロディに合った歌詞を生成します。日本語と英語の両方で歌詞を作成できます。OpenAI APIキーの設定がなくても、プロンプトを生成してコピーし、他のAIサービスで使用できます。'
+              : 'Upload a MIDI file and generate lyrics that match the melody using the latest AI model (OpenAI GPT-4o). Create lyrics in both Japanese and English. Even without an OpenAI API key, you can generate and copy the prompts to use with other AI services.'}
           </p>
+          <div className="mt-2 text-xs grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="flex items-center">
+              <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+              {language === 'ja' ? '使用AIモデル: OpenAI GPT-4o' : 'AI Model: OpenAI GPT-4o'}
+            </div>
+            <div className="flex items-center">
+              <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+              {language === 'ja' ? '対応言語: 日本語 / 英語' : 'Languages: Japanese / English'}
+            </div>
+          </div>
         </div>
       </header>
 
