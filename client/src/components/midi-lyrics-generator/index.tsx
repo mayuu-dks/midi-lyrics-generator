@@ -222,23 +222,7 @@ export default function MidiLyricsGenerator() {
         </h2>
         
         <div className="space-y-4">
-          <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {language === 'ja' ? 'Q: このアプリをDeployすると、どこのサーバーに公開されるの？' : 'Q: Where is this app deployed when using the Deploy button?'}
-            </h3>
-            <div className="text-gray-700 dark:text-gray-300">
-              {language === 'ja' ? (
-                <p>
-                  このアプリをDeployすると、Replitのホスティングサービスである「Replit Deployments」で公開されます。公開されると、<code>.replit.app</code>というドメイン（例：あなたのアプリ名.replit.app）でアクセスできるようになります。Replitの特徴として：(1) サーバー運用の心配なく、ワンクリックでデプロイ (2) 自動的にHTTPS対応 (3) 自動スケーリング管理 (4) アプリのビルドとホスティングを自動処理 (5) 必要に応じて独自ドメインの設定も可能。このアプリはブラウザ上で動作するので、Replit上でホストされていても、処理はほとんどユーザーのブラウザで行われます。
-                </p>
-              ) : (
-                <p>
-                  When deployed, this app is hosted on Replit's hosting service called "Replit Deployments". It becomes accessible via a <code>.replit.app</code> domain (e.g., yourappname.replit.app). Replit features include: (1) One-click deployment without server management concerns (2) Automatic HTTPS support (3) Automatic scaling management (4) Automatic app building and hosting (5) Option to set up a custom domain if needed. Since this app runs in the browser, most processing occurs in the user's browser even though it's hosted on Replit.
-                </p>
-              )}
-            </div>
-          </div>
-          
+
           <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
               {language === 'ja' ? 'Q: 設定したAPIキーはどこに保存されるの？' : 'Q: Where are the API keys stored?'}
