@@ -235,7 +235,7 @@ export default function TempLyricsEditor({
         <p className="mt-1">
           <span className="font-semibold">ヒント：</span> カンマは「ここが文節の区切り」とAIに伝えるためのもので、適切に設定すると歌詞とメロディがより自然に合うようになります。
         </p>
-        <p className="mt-1">
+        <p className="mt-2 bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded border border-yellow-200 dark:border-yellow-700 font-medium">
           <span className="font-semibold">重要：</span> カンマを追加した後は、「区切りをプロンプトに反映」ボタンをクリックしてから生成を行ってください。これによりAIにメロディと文節の区切りが正しく伝わります。
         </p>
       </div>
