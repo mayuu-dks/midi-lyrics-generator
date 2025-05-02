@@ -80,7 +80,12 @@ export default function PromptPreviewModal({
           >
             キャンセル
           </Button>
-          <Button type="button" onClick={onGenerate}>
+          <Button 
+            type="button" 
+            onClick={onGenerate}
+            className="bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-2 text-base flex items-center gap-2"
+          >
+            <BrainCircuit className="h-5 w-5" />
             このプロンプトで生成
           </Button>
         </DialogFooter>
