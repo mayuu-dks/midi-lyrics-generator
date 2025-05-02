@@ -28,21 +28,35 @@ export default function PromptPreviewModal({
 }: PromptPreviewModalProps) {
   const [copiedSystem, setCopiedSystem] = useState(false);
   const [copiedUser, setCopiedUser] = useState(false);
+  const [copiedAll, setCopiedAll] = useState(false);
 
   // プロンプトをクリップボードにコピーする関数
-  const copyToClipboard = async (text: string, type: 'system' | 'user') => {
+  const copyToClipboard = async (text: string, type: 'system' | 'user' | 'all') => {
     try {
       await navigator.clipboard.writeText(text);
       if (type === 'system') {
         setCopiedSystem(true);
         setTimeout(() => setCopiedSystem(false), 2000);
-      } else {
+      } else if (type === 'user') {
         setCopiedUser(true);
         setTimeout(() => setCopiedUser(false), 2000);
+      } else {
+        setCopiedAll(true);
+        setTimeout(() => setCopiedAll(false), 2000);
       }
     } catch (err) {
       console.error('クリップボードへのコピーに失敗しました:', err);
     }
+  };
+  
+  // 両方のプロンプトを連結してコピーする関数
+  const copyAllPrompts = () => {
+    const allText = `【システムプロンプト】
+${customPrompt}
+
+【ユーザープロンプト】
+${userPrompt || ''}`;
+    copyToClipboard(allText, 'all');
   };
   
   return (
@@ -133,7 +147,27 @@ export default function PromptPreviewModal({
         </div>
         
         <div className="mt-4 text-xs text-gray-500 border-t pt-2">
-          <p>※ APIキーを設定していない場合は、上記のプロンプトをコピーして別のAIサービスで使用できます。</p>
+          <div className="flex items-center justify-between mb-2">
+            <p>※ APIキーを設定していない場合は、プロンプトをコピーして別のAIサービスで使用できます。</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1 text-blue-600 border-blue-300 hover:bg-blue-50 h-8"
+              onClick={copyAllPrompts}
+            >
+              {copiedAll ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  全てコピー済み
+                </>
+              ) : (
+                <>
+                  <ClipboardCopy className="h-4 w-4" />
+                  全てまとめてコピー
+                </>
+              )}
+            </Button>
+          </div>
         </div>
         
         <DialogFooter className="sm:justify-end">
