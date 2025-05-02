@@ -143,6 +143,7 @@ export default function MidiLyricsGenerator() {
         midiData={midiData}
         onTempLyricsUpdate={handleTempLyricsUpdate}
         isVisible={showTempLyricsEditor}
+        currentFileName={currentFileName}
       />
 
       {/* Main Content */}

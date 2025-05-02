@@ -10,12 +10,14 @@ interface TempLyricsEditorProps {
   midiData: MidiAnalysis | null;
   onTempLyricsUpdate: (tempLyrics: string) => void;
   isVisible: boolean;
+  currentFileName: string | null;
 }
 
 export default function TempLyricsEditor({
   midiData,
   onTempLyricsUpdate,
-  isVisible
+  isVisible,
+  currentFileName
 }: TempLyricsEditorProps) {
   // Reactの状態として仮歌詞を管理（単一の情報源）
   const [tempLyrics, setTempLyrics] = useState<string>('');
@@ -27,20 +29,42 @@ export default function TempLyricsEditor({
   // フォーカス制御のためだけにrefを使用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // 前回のMIDIデータを記録するリファレンス
+  const prevMidiDataRef = useRef<{ noteCount?: number; fileName?: string | null } | null>(null);
+
   // MIDIデータが更新されたら仮歌詞を生成
   useEffect(() => {
     if (midiData) {
+      // MIDIファイルが変更されたかチェック
+      const isMidiChanged = 
+        !prevMidiDataRef.current ||
+        prevMidiDataRef.current.noteCount !== midiData.noteCount;
+      
+      // 新しいMIDIデータを記録
+      prevMidiDataRef.current = { 
+        noteCount: midiData.noteCount,
+        fileName: isVisible ? currentFileName : null
+      };
+
       const generatedTemp = generateTempLyrics(midiData);
       
-      // ユーザーが編集した内容がある場合は上書きしない
-      if (!userHasModifiedLyrics) {
-        // ステートのみを更新（DOMの直接操作は行わない）
+      // MIDIが変更された場合またはユーザーが編集していない場合は更新
+      if (isMidiChanged) {
+        // MIDI変更時は編集状態をリセット
+        setUserHasModifiedLyrics(false);
+        setIsUserEditing(false);
+        // 仮歌詞を弾く更新
+        setTempLyrics(generatedTemp);
+        setOriginalTempLyrics(generatedTemp);
+        onTempLyricsUpdate(generatedTemp);
+      } else if (!userHasModifiedLyrics) {
+        // ユーザーが編集していない場合だけ更新
         setTempLyrics(generatedTemp);
         setOriginalTempLyrics(generatedTemp);
         onTempLyricsUpdate(generatedTemp);
       }
     }
-  }, [midiData, onTempLyricsUpdate, userHasModifiedLyrics]);
+  }, [midiData, currentFileName, isVisible, onTempLyricsUpdate, userHasModifiedLyrics]);
 
   // 音符データに基づいて仮歌詞を生成する関数
   const generateTempLyrics = (midi: MidiAnalysis): string => {
