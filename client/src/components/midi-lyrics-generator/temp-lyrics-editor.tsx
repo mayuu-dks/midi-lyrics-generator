@@ -142,7 +142,7 @@ export default function TempLyricsEditor({
 
       <div>
         <Label htmlFor="temp_lyrics" className="mb-1 block">
-          仮歌詞を編集（必要に応じてカンマ(,)で音節の区切りを調整できます）：
+          仮歌詞を編集（必要に応じてカンマ(,)でメロディ・文節の区切りを指定できます）：
         </Label>
 
         {/* 重要な変更: defaultValueの代わりにvalueを使用して完全なcontrolled componentにする */}
@@ -161,13 +161,13 @@ export default function TempLyricsEditor({
 
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <p>
-          <span className="font-semibold">使い方：</span> 音節の区切りを調整したい場合は、必要に応じてカンマ(,)を手動で入力してください。仮歌詞はスペースで区切られて生成されます。
+          <span className="font-semibold">使い方：</span> メロディと歌詞の文節の区切りを調整したい場合は、必要に応じてカンマ(,)を手動で入力してください。仮歌詞はスペースで区切られて生成されます。
         </p>
         <p className="mt-1">
-          <span className="font-semibold">例：</span> 「ラ ラ」 → 「ラ,ラ」 (音節の区切りを指定する場合)
+          <span className="font-semibold">例：</span> 「ラ ラ ラ」 → 「ラ,ラ ラ」 (最初の二つが一つの文節として扱われる)
         </p>
         <p className="mt-1">
-          <span className="font-semibold">ヒント：</span> 音節の区切りをより細かく設定すると、AIが音節を正確にマッチさせやすくなります。
+          <span className="font-semibold">ヒント：</span> カンマは「ここが文節の区切り」とAIに伝えるためのもので、適切に設定すると歌詞とメロディがより自然に合うようになります。
         </p>
       </div>
     </div>
