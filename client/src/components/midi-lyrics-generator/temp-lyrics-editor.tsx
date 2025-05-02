@@ -20,6 +20,8 @@ export default function TempLyricsEditor({
   // Reactの状態として仮歌詞を管理（単一の情報源）
   const [tempLyrics, setTempLyrics] = useState<string>('');
   const [originalTempLyrics, setOriginalTempLyrics] = useState<string>('');
+  // ユーザーが編集中かどうかの状態管理
+  const [isUserEditing, setIsUserEditing] = useState<boolean>(false);
   // フォーカス制御のためだけにrefを使用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -27,12 +29,16 @@ export default function TempLyricsEditor({
   useEffect(() => {
     if (midiData) {
       const generatedTemp = generateTempLyrics(midiData);
-      // ステートのみを更新（DOMの直接操作は行わない）
-      setTempLyrics(generatedTemp);
-      setOriginalTempLyrics(generatedTemp);
-      onTempLyricsUpdate(generatedTemp);
+      
+      // ユーザーが編集中でない場合のみ更新
+      if (!isUserEditing) {
+        // ステートのみを更新（DOMの直接操作は行わない）
+        setTempLyrics(generatedTemp);
+        setOriginalTempLyrics(generatedTemp);
+        onTempLyricsUpdate(generatedTemp);
+      }
     }
-  }, [midiData, onTempLyricsUpdate]);
+  }, [midiData, onTempLyricsUpdate, isUserEditing]);
 
   // 音符データに基づいて仮歌詞を生成する関数
   const generateTempLyrics = (midi: MidiAnalysis): string => {
@@ -76,10 +82,25 @@ export default function TempLyricsEditor({
 
   // テキストエリアの変更を処理する関数
   const handleTempLyricsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // ユーザーが編集を開始したことを記録
+    setIsUserEditing(true);
+    
     // 新しい値をステートにのみ設定（DOMの直接操作は行わない）
     const newValue = e.target.value;
     setTempLyrics(newValue);
     onTempLyricsUpdate(newValue);
+  };
+  
+  // フォーカスイベントハンドラ
+  const handleFocus = () => {
+    setIsUserEditing(true);
+  };
+  
+  // フォーカスが外れた時のイベントハンドラ
+  const handleBlur = () => {
+    // フォーカスが外れた場合、編集状態をリセット
+    // オプション: 非編集状態に戻すまでの時間差を置くことも検討可能
+    setIsUserEditing(false);
   };
 
   // 元の仮歌詞に戻す関数
@@ -87,6 +108,9 @@ export default function TempLyricsEditor({
     // ステートを更新（DOMの直接操作は行わない）
     setTempLyrics(originalTempLyrics);
     onTempLyricsUpdate(originalTempLyrics);
+    
+    // 編集状態をリセット
+    setIsUserEditing(false);
   };
 
   // フォーカス制御用の関数（オプション）
@@ -128,6 +152,8 @@ export default function TempLyricsEditor({
           rows={4}
           value={tempLyrics} // defaultValueからvalueに変更
           onChange={handleTempLyricsChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
           placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラ,ラ,ラ)"
         />
