@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 // テキストエリアコンポーネントを使用しない
 // import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Music } from 'lucide-react';
+import { Music, CheckCircle } from 'lucide-react';
 import { MidiAnalysis } from '@/hooks/use-midi-analysis';
 
 interface TempLyricsEditorProps {
@@ -26,6 +26,8 @@ export default function TempLyricsEditor({
   const [isUserEditing, setIsUserEditing] = useState<boolean>(false);
   // ユーザーがカンマを追加したかどうかを追跡
   const [userHasModifiedLyrics, setUserHasModifiedLyrics] = useState<boolean>(false);
+  // ボタンクリック時の成功状態を管理
+  const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
   // フォーカス制御のためだけにrefを使用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -171,16 +173,28 @@ export default function TempLyricsEditor({
           <Button 
             variant="default" 
             size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white font-bold flex items-center gap-1"
             onClick={() => {
               // 更新した値を親コンポーネントに通知
               onTempLyricsUpdate(tempLyrics);
-              // 更新が行われたことをユーザーに表示
-              alert('仮歌詞の変更がプロンプトに反映されました。生成ボタンをクリックして歌詞を生成してください。');
+              // 一時的にチェックマークを表示する状態を設定
+              setIsSuccessful(true);
+              // 2秒後にチェックマークを消す
+              setTimeout(() => {
+                setIsSuccessful(false);
+              }, 2000);
             }}
             disabled={!userHasModifiedLyrics} // ユーザーがカンマを追加していない場合はボタンを無効化
             title={userHasModifiedLyrics ? '変更を反映します' : 'カンマを追加してからクリックしてください'}
           >
-            区切りをプロンプトに反映
+            {isSuccessful ? (
+              <>
+                <CheckCircle className="h-4 w-4" />
+                反映済み
+              </>
+            ) : (
+              "区切りをプロンプトに反映"
+            )}
           </Button>
         </div>
       </div>
