@@ -203,6 +203,13 @@ export default function TempLyricsEditor({
         <Label htmlFor="temp_lyrics" className="mb-1 block">
           仮歌詞を編集（必要に応じてカンマ(,)でメロディ・文節の区切りを指定できます）：
         </Label>
+        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 pl-1">
+          <span className="font-semibold">仮歌詞の表記ルール：</span> 
+          8分音符以下の短い音符: 「ラ」 / 
+          4分音符: 「ラー」 / 
+          2分音符以上: 「ラーー」 / 
+          1拍以上の休符: 「ッ」（前のフレーズの後に配置）
+        </div>
 
         {/* 重要な変更: defaultValueの代わりにvalueを使用して完全なcontrolled componentにする */}
         <textarea
