@@ -176,8 +176,8 @@ export default function MidiLyricsGenerator() {
         </div>
       </header>
 
-      {/* Mobile-only advertisement under header */}
-      <div className="lg:hidden my-4">
+      {/* Advertisement under header (all devices) */}
+      <div className="my-4">
         <GoogleAdsense 
           className="mx-auto py-2" 
           format="horizontal"
@@ -209,15 +209,6 @@ export default function MidiLyricsGenerator() {
           generateAILyrics={generateAILyrics}
           moodOptions={moodOptions}
         />
-        
-        {/* Vertical advertisement between panels (visible only on desktop) */}
-        <div className="hidden lg:block">
-          <GoogleAdsense 
-            className="h-full w-[120px] mx-2" 
-            format="vertical"
-            slot="2345678901" // あなたの実際の広告ユニットIDに置き換えてください
-          />
-        </div>
 
         <ContentPanel 
           lyrics={lyrics}
