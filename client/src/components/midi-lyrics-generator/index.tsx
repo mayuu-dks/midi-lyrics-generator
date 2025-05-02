@@ -148,14 +148,14 @@ export default function MidiLyricsGenerator() {
             {language === 'ja' ? (
               <>
                 <li>MIDIファイルをアップロードして、メロディに合った歌詞をAI生成</li>
-                <li>最新のAIモデル <strong>OpenAI GPT-4o</strong> を使用</li>
+                <li>最新のAIモデル <strong>OpenAI GPT-4o</strong> を使用（APIキーは右上の設定ボタンから設定可能）</li>
                 <li>日本語と英語の両方で歌詞を作成可能（右上のボタンで切り替え可能）</li>
                 <li>【重要】OpenAI APIキーの設定がなくても、プロンプトを生成してコピーし、他のAIサービスで使用可能</li>
               </>
             ) : (
               <>
                 <li>Upload a MIDI file and generate lyrics that match the melody</li>
-                <li>Uses the latest AI model <strong>OpenAI GPT-4o</strong></li>
+                <li>Uses the latest AI model <strong>OpenAI GPT-4o</strong> (set API key via settings button in the top-right)</li>
                 <li>Create lyrics in both Japanese and English (switch language with the button in the top-right)</li>
                 <li><strong>Important:</strong> Even without an OpenAI API key, you can generate and copy the prompts to use with other AI services</li>
               </>
