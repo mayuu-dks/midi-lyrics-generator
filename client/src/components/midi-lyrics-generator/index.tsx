@@ -176,6 +176,15 @@ export default function MidiLyricsGenerator() {
         </div>
       </header>
 
+      {/* Mobile-only advertisement under header */}
+      <div className="lg:hidden my-4">
+        <GoogleAdsense 
+          className="mx-auto py-2" 
+          format="horizontal"
+          slot="3456789012" // あなたの実際の広告ユニットIDに置き換えてください
+        />
+      </div>
+
       {/* 仮歌詞エディタ */}
       <TempLyricsEditor 
         midiData={midiData}
@@ -200,6 +209,15 @@ export default function MidiLyricsGenerator() {
           generateAILyrics={generateAILyrics}
           moodOptions={moodOptions}
         />
+        
+        {/* Vertical advertisement between panels (visible only on desktop) */}
+        <div className="hidden lg:block">
+          <GoogleAdsense 
+            className="h-full w-[120px] mx-2" 
+            format="vertical"
+            slot="2345678901" // あなたの実際の広告ユニットIDに置き換えてください
+          />
+        </div>
 
         <ContentPanel 
           lyrics={lyrics}
@@ -214,6 +232,15 @@ export default function MidiLyricsGenerator() {
           language={language}
         />
       </main>
+
+      {/* Advertisement Section */}
+      <div className="my-8">
+        <GoogleAdsense 
+          className="mx-auto max-w-4xl py-4" 
+          format="horizontal"
+          slot="1234567890" // あなたの実際の広告ユニットIDに置き換えてください
+        />
+      </div>
 
       {/* FAQ Section */}
       <div className="mt-12 mb-8 max-w-4xl mx-auto">
