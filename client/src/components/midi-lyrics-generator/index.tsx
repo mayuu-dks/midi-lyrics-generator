@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Music, Globe, Settings, HelpCircle } from 'lucide-react';
-import GoogleAdsense from '../GoogleAdsense';
 import ControlPanel from './control-panel';
 import ContentPanel from './content-panel';
 import SettingsModal from './settings-modal';
@@ -176,15 +175,6 @@ export default function MidiLyricsGenerator() {
         </div>
       </header>
 
-      {/* Advertisement under header (all devices) */}
-      <div className="my-4">
-        <GoogleAdsense 
-          className="mx-auto py-2" 
-          format="horizontal"
-          slot="3456789012" // あなたの実際の広告ユニットIDに置き換えてください
-        />
-      </div>
-
       {/* 仮歌詞エディタ */}
       <TempLyricsEditor 
         midiData={midiData}
@@ -223,15 +213,6 @@ export default function MidiLyricsGenerator() {
           language={language}
         />
       </main>
-
-      {/* Advertisement Section */}
-      <div className="my-8">
-        <GoogleAdsense 
-          className="mx-auto max-w-4xl py-4" 
-          format="horizontal"
-          slot="1234567890" // あなたの実際の広告ユニットIDに置き換えてください
-        />
-      </div>
 
       {/* FAQ Section */}
       <div className="mt-12 mb-8 max-w-4xl mx-auto">
