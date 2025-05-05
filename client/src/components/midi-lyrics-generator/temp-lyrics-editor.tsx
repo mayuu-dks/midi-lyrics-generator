@@ -6,18 +6,22 @@ import { Label } from '@/components/ui/label';
 import { Music, CheckCircle } from 'lucide-react';
 import { MidiAnalysis } from '@/hooks/use-midi-analysis';
 
+type Language = 'ja' | 'en';
+
 interface TempLyricsEditorProps {
   midiData: MidiAnalysis | null;
   onTempLyricsUpdate: (tempLyrics: string) => void;
   isVisible: boolean;
   currentFileName: string | null;
+  language?: Language;
 }
 
 export default function TempLyricsEditor({
   midiData,
   onTempLyricsUpdate,
   isVisible,
-  currentFileName
+  currentFileName,
+  language = 'ja' // デフォルトは日本語
 }: TempLyricsEditorProps) {
   // Reactの状態として仮歌詞を管理（単一の情報源）
   const [tempLyrics, setTempLyrics] = useState<string>('');
@@ -34,7 +38,10 @@ export default function TempLyricsEditor({
   // 前回のMIDIデータを記録するリファレンス
   const prevMidiDataRef = useRef<{ noteCount?: number; fileName?: string | null } | null>(null);
 
-  // MIDIデータが更新されたら仮歌詞を生成
+  // 言語が変更された場合のために前回の言語を記録
+  const prevLanguageRef = useRef<string>(language);
+
+  // MIDIデータまたは言語が更新されたら仮歌詞を生成
   useEffect(() => {
     if (midiData) {
       // MIDIファイルが変更されたかチェック
@@ -42,23 +49,36 @@ export default function TempLyricsEditor({
         !prevMidiDataRef.current ||
         prevMidiDataRef.current.noteCount !== midiData.noteCount;
       
+      // 言語が変更されたかチェック
+      const isLanguageChanged = prevLanguageRef.current !== language;
+      
       // 新しいMIDIデータを記録
       prevMidiDataRef.current = { 
         noteCount: midiData.noteCount,
         fileName: isVisible ? currentFileName : null
       };
+      
+      // 現在の言語を記録
+      prevLanguageRef.current = language;
 
       const generatedTemp = generateTempLyrics(midiData);
       
-      // MIDIが変更された場合またはユーザーが編集していない場合は更新
+      // MIDIが変更された場合、言語が変更された場合、またはユーザーが編集していない場合は更新
       if (isMidiChanged) {
         // MIDI変更時は編集状態をリセット
         setUserHasModifiedLyrics(false);
         setIsUserEditing(false);
-        // 仮歌詞を弾く更新
+        // 仮歌詞を更新
         setTempLyrics(generatedTemp);
         setOriginalTempLyrics(generatedTemp);
         onTempLyricsUpdate(generatedTemp);
+      } else if (isLanguageChanged) {
+        // 言語変更時は、ユーザーが編集していない場合のみ更新
+        if (!userHasModifiedLyrics) {
+          setTempLyrics(generatedTemp);
+          setOriginalTempLyrics(generatedTemp);
+          onTempLyricsUpdate(generatedTemp);
+        }
       } else if (!userHasModifiedLyrics) {
         // ユーザーが編集していない場合だけ更新
         setTempLyrics(generatedTemp);
@@ -66,29 +86,34 @@ export default function TempLyricsEditor({
         onTempLyricsUpdate(generatedTemp);
       }
     }
-  }, [midiData, currentFileName, isVisible, onTempLyricsUpdate, userHasModifiedLyrics]);
+  }, [midiData, currentFileName, isVisible, onTempLyricsUpdate, userHasModifiedLyrics, language]);
 
   // 音符データに基づいて仮歌詞を生成する関数
   const generateTempLyrics = (midi: MidiAnalysis): string => {
     // 音符の長さに基づく記号表現の配列
     const phrasePatterns: string[] = [];
     
+    // 使用する音節を言語に合わせて設定
+    const syllable = language === 'ja' ? 'ラ' : 'La';
+    const longSyllable = language === 'ja' ? 'ラー' : 'La-';
+    const extraLongSyllable = language === 'ja' ? 'ラーー' : 'La--';
+    
     // 音符を長さに応じて分類
     midi.notes.forEach(note => {
       const duration = note.duration;
       
       if (duration <= 0.125) {
-        phrasePatterns.push('ラ');
+        phrasePatterns.push(syllable);
       } else if (duration <= 0.25) {
-        phrasePatterns.push('ラ');
+        phrasePatterns.push(syllable);
       } else if (duration <= 0.5) {
-        phrasePatterns.push('ラ');
+        phrasePatterns.push(syllable);
       } else if (duration <= 1.0) {
-        phrasePatterns.push('ラー');
+        phrasePatterns.push(longSyllable);
       } else if (duration <= 2.0) {
-        phrasePatterns.push('ラーー');
+        phrasePatterns.push(extraLongSyllable);
       } else {
-        phrasePatterns.push('ラーー');
+        phrasePatterns.push(extraLongSyllable);
       }
     });
     
@@ -160,7 +185,9 @@ export default function TempLyricsEditor({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Music className="h-5 w-5 text-primary-600" />
-          <h3 className="text-lg font-semibold">仮歌詞エディタ</h3>
+          <h3 className="text-lg font-semibold">
+            {language === 'ja' ? '仮歌詞エディタ' : 'Temporary Lyrics Editor'}
+          </h3>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -168,7 +195,7 @@ export default function TempLyricsEditor({
             size="sm"
             onClick={resetToOriginal}
           >
-            元に戻す
+            {language === 'ja' ? '元に戻す' : 'Reset'}
           </Button>
           <Button 
             variant="default" 
@@ -185,15 +212,17 @@ export default function TempLyricsEditor({
               }, 2000);
             }}
             disabled={!userHasModifiedLyrics} // ユーザーがカンマを追加していない場合はボタンを無効化
-            title={userHasModifiedLyrics ? '変更を反映します' : 'カンマを追加してからクリックしてください'}
+            title={userHasModifiedLyrics 
+              ? (language === 'ja' ? '変更を反映します' : 'Apply changes') 
+              : (language === 'ja' ? 'カンマを追加してからクリックしてください' : 'Please add commas before clicking')}
           >
             {isSuccessful ? (
               <>
                 <CheckCircle className="h-4 w-4" />
-                反映済み
+                {language === 'ja' ? '反映済み' : 'Applied'}
               </>
             ) : (
-              "区切りをプロンプトに反映"
+              language === 'ja' ? "区切りをプロンプトに反映" : "Apply Breaks to Prompt"
             )}
           </Button>
         </div>
@@ -201,14 +230,18 @@ export default function TempLyricsEditor({
 
       <div>
         <Label htmlFor="temp_lyrics" className="mb-1 block">
-          仮歌詞を編集（必要に応じてカンマ(,)でメロディ・文節の区切りを指定できます）：
+          {language === 'ja' 
+            ? '仮歌詞を編集（必要に応じてカンマ(,)でメロディ・文節の区切りを指定できます）：'
+            : 'Edit temporary lyrics (use commas (,) to mark melody and phrase breaks as needed):'
+          }
         </Label>
         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 pl-1">
-          <span className="font-semibold">仮歌詞の表記ルール：</span> 
-          8分音符以下の短い音符: 「ラ」 / 
-          4分音符: 「ラー」 / 
-          2分音符以上: 「ラーー」 / 
-          1拍以上の休符: 「ッ」（前のフレーズの後に配置）
+          <span className="font-semibold">{language === 'ja' ? '仮歌詞の表記ルール：' : 'Notation rules:'}</span> 
+          {language === 'ja' ? (
+            <>8分音符以下の短い音符: 「ラ」 / 4分音符: 「ラー」 / 2分音符以上: 「ラーー」 / 1拍以上の休符: 「ッ」（前のフレーズの後に配置）</>
+          ) : (
+            <>Short notes (eighth notes and shorter): "La" / Quarter notes: "La-" / Half notes and longer: "La--" / Rests longer than one beat: "_" (placed after the previous phrase)</>
+          )}
         </div>
 
         {/* 重要な変更: defaultValueの代わりにvalueを使用して完全なcontrolled componentにする */}
@@ -221,22 +254,36 @@ export default function TempLyricsEditor({
           onFocus={handleFocus}
           onBlur={handleBlur}
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
-          placeholder="MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラララ)"
+          placeholder={language === 'ja' 
+            ? "MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラララ)" 
+            : "Temporary lyrics will appear when you upload a MIDI file (e.g., LaLaLa)"}
         />
       </div>
 
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <p>
-          <span className="font-semibold">使い方：</span> メロディと歌詞の文節の区切りを調整したい場合は、必要に応じてカンマ(,)を手動で入力してください。
+          <span className="font-semibold">{language === 'ja' ? '使い方：' : 'How to use:'}</span> 
+          {language === 'ja' 
+            ? 'メロディと歌詞の文節の区切りを調整したい場合は、必要に応じてカンマ(,)を手動で入力してください。'
+            : 'To adjust breaks between melody and lyric phrases, manually add commas (,) as needed.'}
         </p>
         <p className="mt-1">
-          <span className="font-semibold">例：</span> 「ラララ」→一文節として扱われます。「ララ,ラ」→二文節として扱われます。
+          <span className="font-semibold">{language === 'ja' ? '例：' : 'Example:'}</span> 
+          {language === 'ja' 
+            ? '「ラララ」→一文節として扱われます。「ララ,ラ」→二文節として扱われます。'
+            : '"LaLaLa" → treated as one phrase. "LaLa,La" → treated as two phrases.'}
         </p>
         <p className="mt-1">
-          <span className="font-semibold">ヒント：</span> カンマは「ここが文節の区切り」とAIに伝えるためのもので、適切に設定すると歌詞とメロディがより自然に合うようになります。
+          <span className="font-semibold">{language === 'ja' ? 'ヒント：' : 'Tip:'}</span> 
+          {language === 'ja' 
+            ? 'カンマは「ここが文節の区切り」とAIに伝えるためのもので、適切に設定すると歌詞とメロディがより自然に合うようになります。'
+            : 'Commas tell the AI "this is a phrase break" - setting them appropriately helps lyrics match the melody more naturally.'}
         </p>
         <p className="mt-2 bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded border border-yellow-200 dark:border-yellow-700 font-medium">
-          <span className="font-semibold">重要：</span> カンマを追加した後は、「区切りをプロンプトに反映」ボタンをクリックしてから生成を行ってください。これによりAIにメロディと文節の区切りが正しく伝わります。
+          <span className="font-semibold">{language === 'ja' ? '重要：' : 'Important:'}</span> 
+          {language === 'ja' 
+            ? 'カンマを追加した後は、「区切りをプロンプトに反映」ボタンをクリックしてから生成を行ってください。これによりAIにメロディと文節の区切りが正しく伝わります。'
+            : 'After adding commas, click the "Apply Breaks to Prompt" button before generating lyrics. This ensures the AI correctly understands melody and phrase breaks.'}
         </p>
       </div>
     </div>
