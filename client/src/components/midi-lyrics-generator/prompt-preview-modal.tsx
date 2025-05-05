@@ -83,7 +83,7 @@ ${userPrompt || ''}`;
             <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded text-xs inline-flex items-center">
               <span className="font-semibold mr-2">現在のAIプロバイダー:</span>
               <span className="text-blue-600 dark:text-blue-400">
-                {apiProvider === 'openai' ? 'OpenAI (GPT-4o)' : apiProvider === 'google' ? 'Google (Gemini-1.5-pro)' : 'Google (Gemini-2.5-pro)'}
+                {apiProvider === 'openai' ? 'OpenAI (GPT-4o)' : apiProvider === 'google' ? 'Google (Gemini-1.5-pro)' : 'Google (Gemini 2.0 Flash)'}
               </span>
             </div>
           </div>
