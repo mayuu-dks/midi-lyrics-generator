@@ -55,19 +55,33 @@ export default function ControlPanel({
           <Label htmlFor="midi_file" className="mb-2">
             {language === 'ja' ? 'MIDI ファイルをアップロード' : 'Upload MIDI file'}
           </Label>
-          <Input
-            id="midi_file"
-            ref={fileInputRef}
-            type="file"
-            accept=".mid,.midi"
-            onChange={analyzeMidi}
-            className="cursor-pointer"
-          />
+          <div className="relative">
+            <input
+              id="midi_file"
+              ref={fileInputRef}
+              type="file"
+              accept=".mid,.midi"
+              onChange={analyzeMidi}
+              className="hidden"
+            />
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <div className="flex items-center text-muted-foreground w-full">
+                <FileAudio className="mr-2 h-4 w-4" />
+                <span className="flex-1 truncate">
+                  {currentFileName
+                    ? currentFileName
+                    : language === 'ja' ? 'MIDIファイルを選択' : 'Choose MIDI file'}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {midiData && currentFileName && (
+        {midiData && (
           <div className="p-4 mb-4 text-sm text-primary-800 rounded-lg bg-primary-50 dark:bg-gray-700 dark:text-primary-400 flex flex-col">
-            <div className="font-medium mb-1">{currentFileName}</div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="font-medium">{language === 'ja' ? 'ノート数:' : 'Notes:'}</span>{' '}
