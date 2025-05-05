@@ -300,7 +300,7 @@ ${fullPhrasePattern}
       } 
       else if ((apiProvider === 'google' || apiProvider === 'google25') && aiClient.google) {
         // Google AIを使用
-        const modelName = apiProvider === 'google' ? "gemini-1.5-pro" : "gemini-pro";
+        const modelName = apiProvider === 'google' ? "gemini-1.5-pro" : "gemini-pro-latest";
         const model = aiClient.google.getGenerativeModel({ model: modelName });
         
         const result = await model.generateContent({
