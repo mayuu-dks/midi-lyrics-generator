@@ -296,34 +296,8 @@ ${fullPhrasePattern}
     
     try {
       console.log('AI生成リクエスト:', { systemContent, userContent });
-      
-      // Responses APIをサポートしているか確認
-      if ('responses' in openaiClientRef.current) {
-        try {
-          // Responses APIを使用（reasoning.effort: "high"の高推論モード対応）
-          const systemAndUserPrompt = `${systemContent}\n\n${userContent}`;
-          const responseObj = await openaiClientRef.current.responses.create({
-            model: "o4-mini", // o4-mini = gpt-4o-miniの新しいモデル表記
-            input: systemAndUserPrompt,
-            reasoning: {
-              effort: "high"  // 高推論モード（思考ステップを増やす）
-            }
-          });
-          
-          const generatedLyrics = responseObj.output[0].text;
-          if (generatedLyrics) {
-            setLyrics(generatedLyrics.trim());
-            return; // 正常に処理された場合はここで終了
-          }
-        } catch (error) {
-          console.warn('Responses APIでの呼び出し失敗、フォールバックします:', error);
-          // エラーが発生した場合は引き続き従来のChat Completions APIを試す
-        }
-      }
-      
-      // 従来のchat.completions APIをフォールバックとして使用
       const response = await openaiClientRef.current.chat.completions.create({
-        model: "gpt-4o-mini", // Changed from gpt-4o to gpt-4o-mini as requested
+        model: "gpt-4o", // Using the newest OpenAI model gpt-4o which was released May 13, 2024
         messages: [
           {
             role: "system",
@@ -334,10 +308,8 @@ ${fullPhrasePattern}
             content: userContent
           }
         ],
-        temperature: 0.5, // レベルを低めてより正確な固め打ちな出力に
+        temperature: 0.7,
         max_tokens: 1500,
-        presence_penalty: 0.2, // 少し初期ワード以外の単語を使うように促す
-        frequency_penalty: 0.5 // 単語の繰り返しを減らす
       });
       
       console.log('AI応答:', response);
