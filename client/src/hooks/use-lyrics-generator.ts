@@ -378,7 +378,7 @@ Instructions:
       }
       else if (apiProvider === 'anthropic' && aiClient.anthropic) {
         // Anthropic Claudeを使用
-        // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+        // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025. Claude 3.7 Sonnet is the latest model.
         const modelName = "claude-3-7-sonnet-20250219";
         
         // Claudeに送信するメッセージを作成
