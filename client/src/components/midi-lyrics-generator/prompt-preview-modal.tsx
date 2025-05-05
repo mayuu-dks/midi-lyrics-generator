@@ -83,7 +83,7 @@ ${userPrompt || ''}`;
             <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded text-xs inline-flex items-center">
               <span className="font-semibold mr-2">現在のAIプロバイダー:</span>
               <span className="text-blue-600 dark:text-blue-400">
-                {apiProvider === 'openai' ? 'OpenAI (GPT-4o)' : apiProvider === 'google' ? 'Google (Gemini-1.5-pro)' : 'Google (Gemini 2.0 Flash)'}
+                {apiProvider === 'openai' ? 'OpenAI (GPT-4o)' : apiProvider === 'google' ? 'Google (Gemini-1.5-pro)' : apiProvider === 'google25' ? 'Google (Gemini 2.0 Flash)' : 'Anthropic (Claude 3 Sonnet)'}
               </span>
             </div>
           </div>
@@ -162,7 +162,7 @@ ${userPrompt || ''}`;
         
         <div className="mt-4 text-xs text-gray-500 border-t pt-2">
           <div className="flex items-center justify-between mb-2">
-            <p>※ {apiProvider === 'openai' ? 'OpenAI' : 'Google'} APIキーを設定していない場合は、プロンプトをコピーして別のAIサービスで使用できます。</p>
+            <p>※ {apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} APIキーを設定していない場合は、プロンプトをコピーして別のAIサービスで使用できます。</p>
             <Button 
               variant="outline" 
               size="sm" 
@@ -199,7 +199,7 @@ ${userPrompt || ''}`;
             disabled={!apiKey || apiKey.trim() === ''}
             className={`bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1 rounded-md ${!apiKey || apiKey.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {!apiKey || apiKey.trim() === '' ? `${apiProvider === 'openai' ? 'OpenAI' : 'Google'} APIキーを設定してください` : 'このプロンプトで生成'}
+            {!apiKey || apiKey.trim() === '' ? `${apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} APIキーを設定してください` : 'このプロンプトで生成'}
           </Button>
         </DialogFooter>
       </DialogContent>

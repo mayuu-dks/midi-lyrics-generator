@@ -304,13 +304,31 @@ ${fullPhrasePattern}
         const model = aiClient.google.getGenerativeModel({ model: modelName });
         
         const prompt = `${systemContent}\n\n${userContent}`;
-        const result = await model.generateContent({
-          contents: [{ parts: [{ text: prompt }] }],
-        });
+        const result = await model.generateContent(prompt);
         
         const response = result.response;
         console.log('Google AI応答:', response);
         generatedLyrics = response.text() || '';
+      }
+      else if (apiProvider === 'anthropic' && aiClient.anthropic) {
+        // Anthropic Claudeを使用
+        // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+        const modelName = "claude-3-7-sonnet-20250219";
+        
+        // Claudeに送信するメッセージを作成
+        const result = await aiClient.anthropic.messages.create({
+          model: modelName,
+          max_tokens: 1024,
+          messages: [
+            { role: 'user', content: `${systemContent}\n\n${userContent}` }
+          ],
+        });
+        
+        console.log('Anthropic応答:', result);
+        // Anthropic SDKの型定義を正確に使用
+        if (result.content && result.content.length > 0 && 'text' in result.content[0]) {
+          generatedLyrics = result.content[0].text || '';
+        }
       }
       
       if (generatedLyrics) {
