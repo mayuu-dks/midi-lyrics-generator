@@ -229,7 +229,7 @@ export default function MidiLyricsGenerator() {
 
           <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {language === 'ja' ? 'Q: 設定したAPIキー（OpenAI/Google）はどこに保存されるの？' : 'Q: Where are the API keys (OpenAI/Google) stored?'}
+              {language === 'ja' ? 'Q: 設定したAPIキー（OpenAI/Google/Anthropic）はどこに保存されるの？' : 'Q: Where are the API keys (OpenAI/Google/Anthropic) stored?'}
             </h3>
             <div className="text-gray-700 dark:text-gray-300">
               {language === 'ja' ? (

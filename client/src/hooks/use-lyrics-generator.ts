@@ -326,8 +326,12 @@ ${fullPhrasePattern}
         
         console.log('Anthropic応答:', result);
         // Anthropic SDKの型定義を正確に使用
-        if (result.content && result.content.length > 0 && 'text' in result.content[0]) {
-          generatedLyrics = result.content[0].text || '';
+        // contentは配列で、最初の要素がテキストブロック
+        if (result.content && result.content.length > 0) {
+          const content = result.content[0];
+          if (content.type === 'text') {
+            generatedLyrics = content.text || '';
+          }
         }
       }
       
