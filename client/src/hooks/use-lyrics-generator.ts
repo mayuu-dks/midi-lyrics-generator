@@ -297,7 +297,7 @@ ${fullPhrasePattern}
     try {
       console.log('AI生成リクエスト:', { systemContent, userContent });
       const response = await openaiClientRef.current.chat.completions.create({
-        model: "gpt-4o", // Using the newest OpenAI model gpt-4o which was released May 13, 2024
+        model: "gpt-4o-mini", // Changed from gpt-4o to gpt-4o-mini as requested
         messages: [
           {
             role: "system",
@@ -308,8 +308,10 @@ ${fullPhrasePattern}
             content: userContent
           }
         ],
-        temperature: 0.7,
+        temperature: 0.5, // レベルを低めてより正確な固め打ちな出力に
         max_tokens: 1500,
+        presence_penalty: 0.2, // 少し初期ワード以外の単語を使うように促す
+        frequency_penalty: 0.5 // 単語の繰り返しを減らす
       });
       
       console.log('AI応答:', response);
