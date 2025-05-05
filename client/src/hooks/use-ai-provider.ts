@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import Anthropic from '@anthropic-ai/sdk';
 import { ApiProvider } from '@/components/midi-lyrics-generator/settings-modal';
 
 export interface AIClient {
   openai?: OpenAI;
   google?: GoogleGenerativeAI;
+  anthropic?: Anthropic;
   provider: ApiProvider;
 }
 
@@ -34,7 +36,7 @@ export function useAIProvider(): UseAIProviderResult {
       setApiKey(storedApiKey);
     }
     
-    if (storedProvider && (storedProvider === 'openai' || storedProvider === 'google' || storedProvider === 'google25')) {
+    if (storedProvider && (storedProvider === 'openai' || storedProvider === 'google' || storedProvider === 'google25' || storedProvider === 'anthropic')) {
       setApiProvider(storedProvider);
     }
   }, []);
@@ -55,6 +57,11 @@ export function useAIProvider(): UseAIProviderResult {
     } else if (apiProvider === 'google' || apiProvider === 'google25') {
       const googleClient = new GoogleGenerativeAI(apiKey);
       setAIClient({ google: googleClient, provider: apiProvider });
+    } else if (apiProvider === 'anthropic') {
+      const anthropicClient = new Anthropic({
+        apiKey: apiKey
+      });
+      setAIClient({ anthropic: anthropicClient, provider: 'anthropic' });
     }
   }, [apiKey, apiProvider]);
 

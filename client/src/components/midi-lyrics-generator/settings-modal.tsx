@@ -18,7 +18,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
-export type ApiProvider = 'openai' | 'google' | 'google25';
+export type ApiProvider = 'openai' | 'google' | 'google25' | 'anthropic';
 
 interface SettingsModalProps {
   apiKey: string;
@@ -79,18 +79,27 @@ export default function SettingsModal({
                   <SelectItem value="openai">OpenAI (GPT-4o)</SelectItem>
                   <SelectItem value="google">Google (Gemini-1.5-pro)</SelectItem>
                   <SelectItem value="google25">Google (Gemini 2.0 Flash)</SelectItem>
+                  <SelectItem value="anthropic">Anthropic (Claude 3 Sonnet)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
               <Label htmlFor="api_key" className="mb-1 block">
-                {localApiProvider === 'openai' ? 'OpenAI API キー' : 'Google AI API キー'}
+                {localApiProvider === 'openai' 
+                  ? 'OpenAI API キー' 
+                  : localApiProvider === 'anthropic' 
+                    ? 'Anthropic API キー' 
+                    : 'Google AI API キー'}
               </Label>
               <Input
                 type="password"
                 id="api_key"
-                placeholder={localApiProvider === 'openai' ? 'sk-...' : 'AIza...'}
+                placeholder={localApiProvider === 'openai' 
+                  ? 'sk-...' 
+                  : localApiProvider === 'anthropic' 
+                    ? 'sk-ant-...' 
+                    : 'AIza...'}
                 value={localApiKey}
                 onChange={(e) => setLocalApiKey(e.target.value)}
                 className="mb-1"
@@ -101,6 +110,19 @@ export default function SettingsModal({
                     OpenAI APIキーがなければ、
                     <a 
                       href="https://platform.openai.com/api-keys" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-primary-600 dark:text-primary-400 hover:underline"
+                    >
+                      公式サイト
+                    </a>
+                    で作成してください。
+                  </>
+                ) : localApiProvider === 'anthropic' ? (
+                  <>
+                    Anthropic APIキーがなければ、
+                    <a 
+                      href="https://console.anthropic.com/settings/keys" 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="text-primary-600 dark:text-primary-400 hover:underline"
