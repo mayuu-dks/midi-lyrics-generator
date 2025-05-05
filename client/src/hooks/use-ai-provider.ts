@@ -62,8 +62,15 @@ export function useAIProvider(): UseAIProviderResult {
   useEffect(() => {
     console.log('初期化: APIプロバイダー設定をチェック・初期化します');
     
-    // デフォルトを強制的に設定する場合は次の行のコメントを外す
-    // return resetAndForceAnthropicProvider();
+    // 強制的にデフォルト値を設定する
+    // 注意: ユーザー設定を尊重する場合は次の行を削除し、下記のコメントを外してください
+    {
+      console.log('🔄 強制リセット: APIプロバイダー設定を強制的に「anthropic」に設定します');
+      localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
+      setApiProvider(DEFAULT_API_PROVIDER);
+      return;
+    }
+    // 以下のコードは上記の強制リセットがおこなわれると実行されません
     
     const storedProvider = localStorage.getItem('ai_provider');
     console.log(`ローカルストレージ内のAPIプロバイダー設定: ${storedProvider || '未設定'}`);
@@ -96,27 +103,8 @@ export function useAIProvider(): UseAIProviderResult {
       }
     }
     
-    // 設定を強制的にアップデートする関数
-    function resetAndForceAnthropicProvider(): boolean {
-      try {
-        console.log('🔄 APIプロバイダー設定を強制的にリセットし「anthropic」に設定します');
-        localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
-        setApiProvider(DEFAULT_API_PROVIDER);
-        return true;
-      } catch (e) {
-        console.error('❗ APIプロバイダー設定のリセットに失敗しました:', e);
-        return false;
-      }
-    }
-    
-    // APIキーの読み込み
-    const storedApiKey = localStorage.getItem('ai_api_key');
-    if (storedApiKey) {
-      console.log('APIキーが設定されています');
-      setApiKey(storedApiKey);
-    } else {
-      console.log('APIキーが設定されていません');
-    }
+    // APIキーの読み込み - 強制リセットの後に実行されないコード
+    // 強制リセットが有効な場合はたどり着かないのでエラーは考慮しなくて良い
   }, []);
 
   // APIキーとプロバイダーの変更によるクライアント初期化
@@ -155,11 +143,12 @@ export function useAIProvider(): UseAIProviderResult {
 
   // APIキーの削除
   const handleApiKeyDelete = useCallback(() => {
+    console.log('🗑️ APIキーを削除し、デフォルトのAPIプロバイダー設定にリセットします');
     setApiKey('');
     localStorage.removeItem('ai_api_key');
-    // APIプロバイダーをanthropicにリセット
-    setApiProvider('anthropic');
-    localStorage.setItem('ai_provider', 'anthropic');
+    // APIプロバイダーをデフォルト値にリセット
+    setApiProvider(DEFAULT_API_PROVIDER);
+    localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
     setAIClient(null);
   }, []);
 
