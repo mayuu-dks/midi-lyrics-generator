@@ -94,9 +94,9 @@ export default function TempLyricsEditor({
     const phrasePatterns: string[] = [];
     
     // 使用する音節を言語に合わせて設定
-    const syllable = language === 'ja' ? 'ラ' : 'La';
-    const longSyllable = language === 'ja' ? 'ラー' : 'La-';
-    const extraLongSyllable = language === 'ja' ? 'ラーー' : 'La--';
+    const syllable = language === 'ja' ? 'ラ' : 'la';
+    const longSyllable = language === 'ja' ? 'ラー' : 'la-';
+    const extraLongSyllable = language === 'ja' ? 'ラーー' : 'la--';
     
     // 音符を長さに応じて分類
     midi.notes.forEach(note => {
@@ -240,7 +240,7 @@ export default function TempLyricsEditor({
           {language === 'ja' ? (
             <>8分音符以下の短い音符: 「ラ」 / 4分音符: 「ラー」 / 2分音符以上: 「ラーー」 / 1拍以上の休符: 「ッ」（前のフレーズの後に配置）</>
           ) : (
-            <>Short notes (eighth notes and shorter): "La" / Quarter notes: "La-" / Half notes and longer: "La--" / Rests longer than one beat: "_" (placed after the previous phrase)</>
+            <>Short notes (eighth notes and shorter): "la" / Quarter notes: "la-" / Half notes and longer: "la--" / Rests longer than one beat: "_" (placed after the previous phrase)</>
           )}
         </div>
 
@@ -256,7 +256,7 @@ export default function TempLyricsEditor({
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-mono"
           placeholder={language === 'ja' 
             ? "MIDIファイルをアップロードすると仮歌詞が表示されます (例: ラララ)" 
-            : "Temporary lyrics will appear when you upload a MIDI file (e.g., LaLaLa)"}
+            : "Temporary lyrics will appear when you upload a MIDI file (e.g., lalala)"}
         />
       </div>
 
@@ -271,7 +271,7 @@ export default function TempLyricsEditor({
           <span className="font-semibold">{language === 'ja' ? '例：' : 'Example:'}</span> 
           {language === 'ja' 
             ? '「ラララ」→一文節として扱われます。「ララ,ラ」→二文節として扱われます。'
-            : '"LaLaLa" → treated as one phrase. "LaLa,La" → treated as two phrases.'}
+            : '"lalala" → treated as one phrase. "lala,la" → treated as two phrases.'}
         </p>
         <p className="mt-1">
           <span className="font-semibold">{language === 'ja' ? 'ヒント：' : 'Tip:'}</span> 
