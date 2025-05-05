@@ -14,6 +14,12 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },
+  // ブラウザ向けに process.env.NODE_ENV を固定文字列に置き換える
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+    // process.env そのものを空オブジェクトに置き換える
+    'process.env': '{}',
+  },
   root: path.resolve(__dirname, "client"),
   build: {
     // ライブラリモードで Web Component の単一ファイルを出力

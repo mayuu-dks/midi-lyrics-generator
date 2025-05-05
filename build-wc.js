@@ -8,9 +8,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Web Componentビルド用のコマンド実行
 console.log('Building Web Component...');
+
+// NODE_ENVを明示的に指定して実行
+process.env.NODE_ENV = 'production';
+
 const buildProcess = spawn('vite', ['build', '--config', 'wc-vite.config.ts'], {
   stdio: 'inherit',
-  shell: true
+  shell: true,
+  env: { ...process.env, NODE_ENV: 'production' }
 });
 
 buildProcess.on('close', (code) => {
