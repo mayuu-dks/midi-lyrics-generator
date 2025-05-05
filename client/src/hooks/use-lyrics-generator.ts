@@ -142,12 +142,20 @@ export function useLyricsGenerator({
     
     const moodText = songMood && songMood !== 'none' ? songMood : '指定なし';
     
-    const systemPrompt = `あなたはプロの作詞家です。提供されたMIDIファイルの分析情報に基づいて、メロディに完全に合った歌詞を生成してください。
+    // 言語に基づいてシステムプロンプトを選択
+    const systemPrompt = language === 'ja'
+      ? `あなたはプロの作詞家です。提供されたMIDIファイルの分析情報に基づいて、メロディに完全に合った歌詞を生成してください。
 曲のタイトル: ${songTitle || '指定なし'}
 曲の雰囲気: ${moodText}
-歌詞の言語: ${language === 'ja' ? '日本語' : 'English'}`;
+歌詞の言語: 日本語`
+      : `You are a professional lyricist. Based on the analysis information of the provided MIDI file, please generate lyrics that perfectly match the melody.
+Song title: ${songTitle || 'Not specified'}
+Song mood: ${songMood && songMood !== 'none' ? songMood : 'Not specified'}
+Lyrics language: English`;
     
-    const userPrompt = `音符パターンに完全に一致する歌詞を生成してください。
+    // 言語に応じてユーザープロンプトを選択
+    const userPrompt = language === 'ja'
+      ? `音符パターンに完全に一致する歌詞を生成してください。
 
 曲の設定:
 タイトル: ${songTitle || '指定なし'}
@@ -179,7 +187,7 @@ export function useLyricsGenerator({
 3. 表現とフォーマット:
    - 余計な説明や前置き、コメントを含めないこと
    - 余分な文字や空白を追加しないこと
-   - 自然な${language === 'ja' ? '日本語' : '英語'}の流れを維持すること
+   - 自然な日本語の流れを維持すること
    - 前回の生成結果は考慮しないこと
    - タイトルと曲調に合った内容にすること
 
@@ -203,8 +211,66 @@ ${fullPhrasePattern}
 - メロディのリズムと音符の長さに合わせて、自然な歌詞を作成してください。
 - ${songTitle ? `曲のタイトル「${songTitle}」を考慮してください。` : ''}
 - ${(songMood && songMood !== 'none') ? `曲の雰囲気「${songMood}」を反映させてください。` : ''}
-- 歌詞は${language === 'ja' ? '日本語' : 'English'}で生成してください。
-- 歌詞のみを出力し、説明や前置きは不要です。`;
+- 歌詞は日本語で生成してください。
+- 歌詞のみを出力し、説明や前置きは不要です。`
+      : `Please generate lyrics that perfectly match the note pattern.
+
+Song settings:
+Title: ${songTitle || 'Not specified'}
+Mood: ${songMood && songMood !== 'none' ? songMood : 'Not specified'}
+
+Note pattern details:
+32nd notes and shorter: ${notesByDuration.veryShort}
+16th notes: ${notesByDuration.short}
+8th notes: ${notesByDuration.eighth}
+Quarter notes: ${notesByDuration.quarter}
+Half notes: ${notesByDuration.half}
+Whole notes and longer: ${notesByDuration.whole}
+
+Absolute constraints:
+1. Strict matching of note count:
+   - Generate syllables that correspond to ${midi.noteCount} notes
+   - No discrepancy in the number of notes is tolerated
+   - Basically use 1 syllable per note
+   - Maximum number of syllables changes according to note length
+
+2. Strict correspondence between note length and number of syllables:
+   - 32nd notes and shorter: 1 syllable only
+   - 16th notes: 1 syllable only
+   - 8th notes: 1 syllable only
+   - Quarter notes: maximum 2 syllables
+   - Half notes: maximum 2 syllables
+   - Whole notes and longer: maximum 2 syllables
+
+3. Expression and format:
+   - Do not include unnecessary explanations, preambles, or comments
+   - Do not add extra characters or spaces
+   - Maintain a natural flow of English
+   - Do not consider previous generation results
+   - Make the content match the title and song mood
+
+4. Note pattern order and phrase grouping:
+   Please generate lyrics according to the following note pattern.
+   If separated by commas (,), treat them as one phrase.
+
+Temporary lyrics notation rules:
+- Short notes (eighth notes and shorter): "la"
+- Quarter notes: "la-"
+- Half notes and longer: "la--"
+- Rests longer than one beat: "_" (placed after the previous phrase)
+- Commas (,) indicate breaks between melody and lyric phrases, and notes separated by commas are treated as one phrase
+
+Current phrase grouping:
+${fullPhrasePattern}
+
+Initial note sequence (partial): ${notesSummary}
+
+Instructions:
+- Create natural lyrics that match the rhythm and length of the notes in the melody.
+- ${songTitle ? `Consider the song title "${songTitle}".` : ''}
+- ${(songMood && songMood !== 'none') ? `Reflect the mood "${songMood}" in the lyrics.` : ''}
+- Generate the lyrics in English.
+- Output only the lyrics, no explanations or preambles are needed.`;
     
     return { systemPrompt, userPrompt };
   }, [language, songTitle, songMood, customTempLyrics]);
