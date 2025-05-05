@@ -120,8 +120,8 @@ export default function ContentPanel({
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                   {language === 'ja' 
-                    ? 'MIDIファイルをアップロードして、OpenAI APIを使って曲に合った歌詞を自動生成します。'
-                    : 'Upload a MIDI file and generate lyrics that match your music using the OpenAI API.'}
+                    ? 'MIDIファイルをアップロードして、AIを使って曲に合った歌詞を自動生成します。'
+                    : 'Upload a MIDI file and generate lyrics that match your music using AI.'}
                 </p>
                 <div className="flex flex-col space-y-2">
                   <div className="flex items-center">
@@ -137,7 +137,7 @@ export default function ContentPanel({
                       <Key className="h-5 w-5" />
                     </div>
                     <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                      {language === 'ja' ? 'OpenAI APIキーを設定' : 'Set OpenAI API key'}
+                      {language === 'ja' ? 'APIキーを設定（設定しなくても使えます）' : 'Set API key (optional)'}
                     </span>
                   </div>
                   <div className="flex items-center">
