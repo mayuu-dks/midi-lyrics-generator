@@ -68,6 +68,19 @@ export function useAIProvider(): UseAIProviderResult {
       console.log('🔄 強制リセット: APIプロバイダー設定を強制的に「anthropic」に設定します');
       localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
       setApiProvider(DEFAULT_API_PROVIDER);
+      
+      // APIキーを読み込む - プロバイダー別のキーを優先
+      const providerSpecificKey = localStorage.getItem(`ai_api_key_${DEFAULT_API_PROVIDER}`);
+      const genericKey = localStorage.getItem('ai_api_key');
+      
+      if (providerSpecificKey) {
+        // プロバイダー別のキーがあれば優先使用
+        setApiKey(providerSpecificKey);
+      } else if (genericKey) {
+        // 彼がなければ汎用キーを使用
+        setApiKey(genericKey);
+      }
+      
       return;
     }
     // 以下のコードは上記の強制リセットがおこなわれると実行されません
@@ -135,9 +148,19 @@ export function useAIProvider(): UseAIProviderResult {
   // APIキー設定の保存
   const handleApiKeySubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    // APIプロバイダーごとに別々のキーを保存する
+    const keyName = `ai_api_key_${apiProvider}`;
+    
     if (apiKey) {
+      // 新しいフォーマットでキーを保存
+      localStorage.setItem(keyName, apiKey);
+      // 旧形式との互換性のため
       localStorage.setItem('ai_api_key', apiKey);
       localStorage.setItem('ai_provider', apiProvider);
+    } else {
+      // キーを削除した場合、該当するプロバイダーのキーのみ削除
+      localStorage.removeItem(keyName);
+      localStorage.removeItem('ai_api_key');
     }
   }, [apiKey, apiProvider]);
 
@@ -145,12 +168,18 @@ export function useAIProvider(): UseAIProviderResult {
   const handleApiKeyDelete = useCallback(() => {
     console.log('🗑️ APIキーを削除し、デフォルトのAPIプロバイダー設定にリセットします');
     setApiKey('');
+    
+    // 現在のプロバイダーのキーを削除
+    localStorage.removeItem(`ai_api_key_${apiProvider}`);
+    
+    // 互換性のための汎用キーも削除
     localStorage.removeItem('ai_api_key');
+    
     // APIプロバイダーをデフォルト値にリセット
     setApiProvider(DEFAULT_API_PROVIDER);
     localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
     setAIClient(null);
-  }, []);
+  }, [apiProvider]);
 
   return {
     aiClient,

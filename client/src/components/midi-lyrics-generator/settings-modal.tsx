@@ -42,6 +42,22 @@ export default function SettingsModal({
   console.log(`SettingsModalが開かれました - 現在のAPIプロバイダー: ${apiProvider}`);
   const [localApiKey, setLocalApiKey] = useState(apiKey);
   const [localApiProvider, setLocalApiProvider] = useState<ApiProvider>(apiProvider || 'anthropic');
+  
+  // APIプロバイダー切替時にそのプロバイダー用のAPIキーを読み込む
+  useEffect(() => {
+    // 初期読み込み時は変更しない
+    if (localApiProvider !== apiProvider) {
+      // 切替先のプロバイダーのキーを取得
+      const providerKey = localStorage.getItem(`ai_api_key_${localApiProvider}`);
+      if (providerKey) {
+        // このプロバイダー用の保存済みキーがあれば読み込む
+        setLocalApiKey(providerKey);
+      } else {
+        // なければ空にする
+        setLocalApiKey('');
+      }
+    }
+  }, [localApiProvider, apiProvider]);
 
   useEffect(() => {
     setLocalApiKey(apiKey);
