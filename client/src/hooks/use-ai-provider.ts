@@ -22,6 +22,19 @@ interface UseAIProviderResult {
   isClientReady: boolean;
 }
 
+// ローカルストレージをリセットして初期状態に戻す関数
+function resetLocalStorage() {
+  try {
+    // APIキーは削除
+    localStorage.removeItem('ai_api_key');
+    // APIプロバイダーはanthropicをデフォルトに設定
+    localStorage.setItem('ai_provider', 'anthropic');
+    console.log('ローカルストレージをリセットしました');
+  } catch (e) {
+    console.error('ローカルストレージのリセットに失敗しました:', e);
+  }
+}
+
 export function useAIProvider(): UseAIProviderResult {
   const [apiKey, setApiKey] = useState<string>('');
   const [apiProvider, setApiProvider] = useState<ApiProvider>('anthropic');
@@ -29,6 +42,11 @@ export function useAIProvider(): UseAIProviderResult {
 
   // LocalStorageからAPIキーと設定を読み込み
   useEffect(() => {
+    // アプリケーションの初期化時にローカルストレージをチェックし、デフォルトのantropicを設定
+    if (!localStorage.getItem('ai_provider')) {
+      resetLocalStorage();
+    }
+    
     const storedApiKey = localStorage.getItem('ai_api_key');
     const storedProvider = localStorage.getItem('ai_provider') as ApiProvider | null;
     
@@ -36,8 +54,12 @@ export function useAIProvider(): UseAIProviderResult {
       setApiKey(storedApiKey);
     }
     
+    // 保存されている設定があればそれを使用し、なければanthropicをデフォルトとする
     if (storedProvider && (storedProvider === 'openai' || storedProvider === 'google25' || storedProvider === 'anthropic')) {
       setApiProvider(storedProvider);
+    } else {
+      // デフォルトプロバイダーを設定
+      localStorage.setItem('ai_provider', 'anthropic');
     }
   }, []);
 
@@ -79,6 +101,9 @@ export function useAIProvider(): UseAIProviderResult {
   const handleApiKeyDelete = useCallback(() => {
     setApiKey('');
     localStorage.removeItem('ai_api_key');
+    // APIプロバイダーをanthropicにリセット
+    setApiProvider('anthropic');
+    localStorage.setItem('ai_provider', 'anthropic');
     setAIClient(null);
   }, []);
 
