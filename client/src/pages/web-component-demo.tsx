@@ -1,5 +1,15 @@
 import { useEffect } from 'react';
+import { Link } from 'wouter';
 import '../web-components/midi-lyrics-generator';
+
+// カスタム要素の型宣言を追加
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'midi-lyrics-generator': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    }
+  }
+}
 
 export default function WebComponentDemo() {
   useEffect(() => {
@@ -22,7 +32,15 @@ export default function WebComponentDemo() {
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">　Web Component化されたMIDI歌詞生成機</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">　Web Component化されたMIDI歌詞生成機</h1>
+        <Link href="/" className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-md font-medium flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+          ホームに戻る
+        </Link>
+      </div>
       <p className="mb-6">以下はWeb Componentとして実装されたMIDI歌詞生成機です。</p>
       
       {/* Web Componentを表示 */}
