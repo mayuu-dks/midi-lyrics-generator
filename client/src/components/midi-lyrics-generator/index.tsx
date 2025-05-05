@@ -150,16 +150,16 @@ export default function MidiLyricsGenerator() {
             {language === 'ja' ? (
               <>
                 <li>MIDIファイルをアップロードして、メロディに合った歌詞をAI生成（ヒント：Aメロ、サビなどパートごとに分けて生成したほうがわかりやすいです）</li>
-                <li>最新のAIモデル <strong>OpenAI GPT-4o</strong> を使用（APIキーは右上の設定ボタンから設定可能）</li>
+                <li>最新のAIモデル <strong>OpenAI GPT-4o</strong> または <strong>Google AI Gemini-1.5</strong> を使用（APIキーは右上の設定ボタンから設定可能）</li>
                 <li>日本語と英語の両方で歌詞を作成可能（右上のボタンで切り替え可能）</li>
-                <li className="bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded border border-yellow-200 dark:border-yellow-700 font-medium">【重要】OpenAI APIキーの設定がなくても、プロンプトを生成してコピーし、他のAIサービスで使用可能</li>
+                <li className="bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded border border-yellow-200 dark:border-yellow-700 font-medium">【重要】APIキーの設定がなくても、プロンプトを生成してコピーし、他のAIサービスで使用可能</li>
               </>
             ) : (
               <>
                 <li>Upload a MIDI file and generate lyrics that match the melody (Tip: For better results, create separate MIDI files for verse, chorus, etc.)</li>
-                <li>Uses the latest AI model <strong>OpenAI GPT-4o</strong> (set API key via settings button in the top-right)</li>
+                <li>Uses the latest AI models <strong>OpenAI GPT-4o</strong> or <strong>Google AI Gemini-1.5</strong> (set API key via settings button in the top-right)</li>
                 <li>Create lyrics in both Japanese and English (switch language with the button in the top-right)</li>
-                <li className="bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded border border-yellow-200 dark:border-yellow-700 font-medium"><strong>Important:</strong> Even without an OpenAI API key, you can generate and copy the prompts to use with other AI services</li>
+                <li className="bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded border border-yellow-200 dark:border-yellow-700 font-medium"><strong>Important:</strong> Even without an API key, you can generate and copy the prompts to use with other AI services</li>
               </>
             )}
           </ul>
@@ -167,7 +167,9 @@ export default function MidiLyricsGenerator() {
           <div className="mt-3 text-xs flex flex-wrap gap-3">
             <div className="flex items-center bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
               <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-              {language === 'ja' ? '使用AIモデル: OpenAI GPT-4o' : 'AI Model: OpenAI GPT-4o'}
+              {language === 'ja' 
+                ? `使用AIモデル: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : 'Google AI Gemini-1.5'}` 
+                : `AI Model: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : 'Google AI Gemini-1.5'}`}
             </div>
             <div className="flex items-center bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
               <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
@@ -227,7 +229,7 @@ export default function MidiLyricsGenerator() {
 
           <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {language === 'ja' ? 'Q: 設定したAPIキーはどこに保存されるの？' : 'Q: Where are the API keys stored?'}
+              {language === 'ja' ? 'Q: 設定したAPIキー（OpenAI/Google AI）はどこに保存されるの？' : 'Q: Where are the API keys (OpenAI/Google AI) stored?'}
             </h3>
             <div className="text-gray-700 dark:text-gray-300">
               {language === 'ja' ? (

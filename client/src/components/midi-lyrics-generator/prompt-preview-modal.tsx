@@ -76,9 +76,17 @@ ${userPrompt || ''}`;
         </DialogHeader>
         
         <div className="space-y-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            以下の詳細なプロンプトを使用して歌詞を生成します。システムプロンプトは必要に応じて編集できます。
-          </p>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              以下の詳細なプロンプトを使用して歌詞を生成します。システムプロンプトは必要に応じて編集できます。
+            </p>
+            <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded text-xs inline-flex items-center">
+              <span className="font-semibold mr-2">現在のAIプロバイダー:</span>
+              <span className="text-blue-600 dark:text-blue-400">
+                {apiProvider === 'openai' ? 'OpenAI (GPT-4o)' : 'Google AI (Gemini-1.5-pro)'}
+              </span>
+            </div>
+          </div>
           
           <div className="space-y-8">
             {/* システムプロンプト */}
@@ -154,7 +162,7 @@ ${userPrompt || ''}`;
         
         <div className="mt-4 text-xs text-gray-500 border-t pt-2">
           <div className="flex items-center justify-between mb-2">
-            <p>※ APIキーを設定していない場合は、プロンプトをコピーして別のAIサービスで使用できます。</p>
+            <p>※ {apiProvider === 'openai' ? 'OpenAI' : 'Google AI'} APIキーを設定していない場合は、プロンプトをコピーして別のAIサービスで使用できます。</p>
             <Button 
               variant="outline" 
               size="sm" 
@@ -191,7 +199,7 @@ ${userPrompt || ''}`;
             disabled={!apiKey || apiKey.trim() === ''}
             className={`bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1 rounded-md ${!apiKey || apiKey.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {!apiKey || apiKey.trim() === '' ? 'APIキーを設定してください' : 'このプロンプトで生成'}
+            {!apiKey || apiKey.trim() === '' ? `${apiProvider === 'openai' ? 'OpenAI' : 'Google AI'} APIキーを設定してください` : 'このプロンプトで生成'}
           </Button>
         </DialogFooter>
       </DialogContent>
