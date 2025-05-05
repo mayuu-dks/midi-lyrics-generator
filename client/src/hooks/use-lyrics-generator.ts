@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { MidiAnalysis } from './use-midi-analysis';
-import { useAIProvider, AIClient } from './use-ai-provider';
+import { useAIProvider } from './use-ai-provider';
 import { ApiProvider } from '@/components/midi-lyrics-generator/settings-modal';
+
 // Define types since importing from midi-lyrics-generator would cause circular dependencies
 type Language = 'ja' | 'en';
 
@@ -36,51 +37,22 @@ export function useLyricsGenerator({
   const [lyrics, setLyrics] = useState<string>('');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [apiKey, setApiKey] = useState(() => {
-    try {
-      const savedKey = localStorage.getItem('openai_api_key');
-      return savedKey || '';
-    } catch (error) {
-      console.error('APIキーの取得に失敗しました:', error);
-      return '';
-    }
-  });
   const [lyricsHistory, setLyricsHistory] = useState<LyricsHistory[]>([]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
   const [isCopied, setIsCopied] = useState(false);
+  const [currentUserPrompt, setCurrentUserPrompt] = useState<string>('');
   
-  const openaiClientRef = useRef<OpenAI | null>(null);
-  
-  // Initialize OpenAI client when API key changes
-  const initializeOpenAIClient = useCallback((key: string) => {
-    try {
-      const client = new OpenAI({
-        apiKey: key,
-        dangerouslyAllowBrowser: true
-      });
-      openaiClientRef.current = client;
-      return true;
-    } catch (error) {
-      console.error('OpenAIクライアントの初期化に失敗しました:', error);
-      openaiClientRef.current = null;
-      return false;
-    }
-  }, []);
-  
-  // Effect to initialize OpenAI client when API key changes
-  useEffect(() => {
-    if (apiKey) {
-      const success = initializeOpenAIClient(apiKey);
-      if (success) {
-        localStorage.setItem('openai_api_key', apiKey);
-        setError(null);
-      } else {
-        setError('APIキーの設定に失敗しました');
-      }
-    } else {
-      openaiClientRef.current = null;
-    }
-  }, [apiKey, initializeOpenAIClient]);
+  // AI Providerの設定を使用
+  const {
+    aiClient,
+    apiKey,
+    apiProvider,
+    setApiKey,
+    setApiProvider,
+    handleApiKeySubmit,
+    handleApiKeyDelete,
+    isClientReady
+  } = useAIProvider();
   
   // Effect to manage lyrics history
   useEffect(() => {
@@ -103,7 +75,7 @@ export function useLyricsGenerator({
   }, [currentFileName]);
   
   // Generate prompt for AI based on MIDI data
-  const generatePrompt = (midi: MidiAnalysis): { systemPrompt: string; userPrompt: string } => {
+  const generatePrompt = useCallback((midi: MidiAnalysis): { systemPrompt: string; userPrompt: string } => {
     // 詳細な音符分析を行う
     const notesSummary = midi.notes
       .slice(0, 20) // Limit to first 20 notes for brevity
@@ -235,7 +207,7 @@ ${fullPhrasePattern}
 - 歌詞のみを出力し、説明や前置きは不要です。`;
     
     return { systemPrompt, userPrompt };
-  };
+  }, [language, songTitle, songMood, customTempLyrics]);
   
   // Function to navigate through lyrics history
   const navigateHistory = (direction: 'back' | 'forward') => {
@@ -287,7 +259,7 @@ ${fullPhrasePattern}
       setCustomPrompt(systemContent); // Fallback if customPrompt somehow became empty
     }
     
-    if (!openaiClientRef.current) {
+    if (!aiClient) {
       setError('APIキーが設定されていません');
       return;
     }
@@ -296,25 +268,54 @@ ${fullPhrasePattern}
     setError(null);
     
     try {
-      console.log('AI生成リクエスト:', { systemContent, userContent });
-      const response = await openaiClientRef.current.chat.completions.create({
-        model: "gpt-4o", // Using the newest OpenAI model gpt-4o which was released May 13, 2024
-        messages: [
-          {
-            role: "system",
-            content: systemContent
-          },
-          {
-            role: "user",
-            content: userContent
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1500,
+      console.log('AI生成リクエスト:', { 
+        provider: apiProvider,
+        systemContent, 
+        userContent 
       });
       
-      console.log('AI応答:', response);
-      const generatedLyrics = response.choices[0].message.content;
+      let generatedLyrics = '';
+      
+      // APIプロバイダーに応じて処理を分岐
+      if (apiProvider === 'openai' && aiClient.openai) {
+        // OpenAI APIを使用
+        const response = await aiClient.openai.chat.completions.create({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: "system",
+              content: systemContent
+            },
+            {
+              role: "user",
+              content: userContent
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1500,
+        });
+        
+        console.log('OpenAI応答:', response);
+        generatedLyrics = response.choices[0].message.content || '';
+      } 
+      else if (apiProvider === 'google' && aiClient.google) {
+        // Google AIを使用
+        const model = aiClient.google.getGenerativeModel({ model: "gemini-1.5-pro" });
+        
+        const result = await model.generateContent({
+          contents: [
+            { role: 'user', parts: [{ text: `${systemContent}\n\n${userContent}` }] }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1500,
+          },
+        });
+        
+        const response = result.response;
+        console.log('Google AI応答:', response);
+        generatedLyrics = response.text() || '';
+      }
       
       if (generatedLyrics) {
         setLyrics(generatedLyrics.trim()); // Trim whitespace
@@ -329,45 +330,22 @@ ${fullPhrasePattern}
     }
   };
   
-  // Handle API key submission
-  const handleApiKeySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (apiKey.trim()) {
-      const success = initializeOpenAIClient(apiKey);
-      if (success) {
-        localStorage.setItem('openai_api_key', apiKey);
-        setError(null);
-      } else {
-        setError('APIキーの設定に失敗しました');
-      }
-    }
-  };
-  
-  // Handle API key deletion
-  const handleApiKeyDelete = () => {
-    setApiKey('');
-    localStorage.removeItem('openai_api_key');
-    openaiClientRef.current = null;
-  };
-  
-  // 現在のプロンプト情報を追跡する変数
-  const [currentUserPrompt, setCurrentUserPrompt] = useState('');
-  
   // ユーザープロンプトを更新する関数
   const updateCurrentUserPrompt = useCallback((midi: MidiAnalysis) => {
     if (midi) {
       const prompts = generatePrompt(midi);
       setCurrentUserPrompt(prompts.userPrompt);
     }
-  }, [language, songTitle, songMood, customTempLyrics, generatePrompt]);
+  }, [generatePrompt]);
   
   // MIDIデータまたはカスタム仮歌詞が変更されたときにユーザープロンプトを更新
   useEffect(() => {
     if (midiData) {
       updateCurrentUserPrompt(midiData);
     }
-  }, [midiData, customTempLyrics, updateCurrentUserPrompt]);
+  }, [midiData, updateCurrentUserPrompt]);
   
+  // 公開する値とメソッド
   return {
     lyrics,
     error,
@@ -377,6 +355,8 @@ ${fullPhrasePattern}
     isCopied,
     apiKey,
     setApiKey,
+    apiProvider,
+    setApiProvider,
     generateAILyrics,
     navigateHistory,
     copyLyrics,

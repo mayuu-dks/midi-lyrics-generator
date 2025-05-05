@@ -11,6 +11,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
+import { ApiProvider } from './settings-modal';
+
 interface PromptPreviewModalProps {
   customPrompt: string;
   userPrompt?: string;
@@ -18,6 +20,7 @@ interface PromptPreviewModalProps {
   onGenerate: () => void;
   onClose: () => void;
   apiKey?: string; // APIキーが設定されているかチェックするために追加
+  apiProvider?: ApiProvider;
 }
 
 export default function PromptPreviewModal({
@@ -26,7 +29,8 @@ export default function PromptPreviewModal({
   setCustomPrompt,
   onGenerate,
   onClose,
-  apiKey
+  apiKey,
+  apiProvider = 'openai'
 }: PromptPreviewModalProps) {
   const [copiedSystem, setCopiedSystem] = useState(false);
   const [copiedUser, setCopiedUser] = useState(false);

@@ -58,6 +58,8 @@ export default function MidiLyricsGenerator() {
     isCopied,
     apiKey,
     setApiKey,
+    apiProvider,
+    setApiProvider,
     generateAILyrics,
     navigateHistory,
     copyLyrics,
@@ -269,6 +271,8 @@ export default function MidiLyricsGenerator() {
         <SettingsModal 
           apiKey={apiKey}
           setApiKey={setApiKey}
+          apiProvider={apiProvider}
+          setApiProvider={setApiProvider}
           onSubmit={handleApiKeySubmit}
           onDelete={handleApiKeyDelete}
           onClose={() => setShowSettings(false)}
@@ -286,6 +290,7 @@ export default function MidiLyricsGenerator() {
           }}
           onClose={() => setShowPromptPreview(false)}
           apiKey={apiKey}
+          apiProvider={apiProvider}
         />
       )}
     </div>
