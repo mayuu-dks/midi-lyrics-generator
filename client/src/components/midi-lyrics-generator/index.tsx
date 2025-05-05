@@ -168,8 +168,8 @@ export default function MidiLyricsGenerator() {
             <div className="flex items-center bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
               <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
               {language === 'ja' 
-                ? `使用AIモデル: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : 'Google Gemini-1.5-pro'}` 
-                : `AI Model: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : 'Google Gemini-1.5-pro'}`}
+                ? `使用AIモデル: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : apiProvider === 'google' ? 'Google Gemini-1.5-pro' : 'Google Gemini-2.5-pro'}` 
+                : `AI Model: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : apiProvider === 'google' ? 'Google Gemini-1.5-pro' : 'Google Gemini-2.5-pro'}`}
             </div>
             <div className="flex items-center bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
               <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>

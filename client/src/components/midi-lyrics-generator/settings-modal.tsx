@@ -18,7 +18,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
-export type ApiProvider = 'openai' | 'google';
+export type ApiProvider = 'openai' | 'google' | 'google25';
 
 interface SettingsModalProps {
   apiKey: string;
@@ -76,8 +76,9 @@ export default function SettingsModal({
                   <SelectValue placeholder="APIプロバイダーを選択" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="openai">OpenAI</SelectItem>
-                  <SelectItem value="google">Google AI</SelectItem>
+                  <SelectItem value="openai">OpenAI (GPT-4o)</SelectItem>
+                  <SelectItem value="google">Google (Gemini-1.5-pro)</SelectItem>
+                  <SelectItem value="google25">Google (Gemini-2.5-pro)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

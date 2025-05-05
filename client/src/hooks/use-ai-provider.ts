@@ -34,7 +34,7 @@ export function useAIProvider(): UseAIProviderResult {
       setApiKey(storedApiKey);
     }
     
-    if (storedProvider && (storedProvider === 'openai' || storedProvider === 'google')) {
+    if (storedProvider && (storedProvider === 'openai' || storedProvider === 'google' || storedProvider === 'google25')) {
       setApiProvider(storedProvider);
     }
   }, []);
@@ -52,9 +52,9 @@ export function useAIProvider(): UseAIProviderResult {
         dangerouslyAllowBrowser: true // ブラウザでの実行を許可
       });
       setAIClient({ openai: openaiClient, provider: 'openai' });
-    } else if (apiProvider === 'google') {
+    } else if (apiProvider === 'google' || apiProvider === 'google25') {
       const googleClient = new GoogleGenerativeAI(apiKey);
-      setAIClient({ google: googleClient, provider: 'google' });
+      setAIClient({ google: googleClient, provider: apiProvider });
     }
   }, [apiKey, apiProvider]);
 
