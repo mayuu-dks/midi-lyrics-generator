@@ -294,6 +294,7 @@ export default function MidiLyricsGenerator() {
           onClose={() => setShowPromptPreview(false)}
           apiKey={apiKey}
           apiProvider={apiProvider}
+          language={language}
         />
       )}
     </div>

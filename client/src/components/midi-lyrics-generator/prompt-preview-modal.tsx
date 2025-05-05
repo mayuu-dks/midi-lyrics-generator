@@ -196,12 +196,12 @@ ${userPrompt || ''}`;
               {copiedAll ? (
                 <>
                   <Check className="h-4 w-4" />
-                  全てコピー済み
+                  {language === 'ja' ? '全てコピー済み' : 'All Copied'}
                 </>
               ) : (
                 <>
                   <ClipboardCopy className="h-4 w-4" />
-                  全てまとめてコピー
+                  {language === 'ja' ? '全てまとめてコピー' : 'Copy All'}
                 </>
               )}
             </Button>
@@ -214,7 +214,7 @@ ${userPrompt || ''}`;
             variant="outline"
             onClick={onClose}
           >
-            キャンセル
+            {language === 'ja' ? 'キャンセル' : 'Cancel'}
           </Button>
           <Button 
             type="button" 
@@ -223,7 +223,12 @@ ${userPrompt || ''}`;
             disabled={!apiKey || apiKey.trim() === ''}
             className={`bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1 rounded-md ${!apiKey || apiKey.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {!apiKey || apiKey.trim() === '' ? `${apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} APIキーを設定してください` : 'このプロンプトで生成'}
+            {!apiKey || apiKey.trim() === '' 
+              ? language === 'ja'
+                ? `${apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} APIキーを設定してください`
+                : `Please set up your ${apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} API key`
+              : language === 'ja' ? 'このプロンプトで生成' : 'Generate with this prompt'
+            }
           </Button>
         </DialogFooter>
       </DialogContent>
