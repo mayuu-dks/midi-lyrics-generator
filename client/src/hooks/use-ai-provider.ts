@@ -24,7 +24,7 @@ interface UseAIProviderResult {
 
 export function useAIProvider(): UseAIProviderResult {
   const [apiKey, setApiKey] = useState<string>('');
-  const [apiProvider, setApiProvider] = useState<ApiProvider>('openai');
+  const [apiProvider, setApiProvider] = useState<ApiProvider>('anthropic');
   const [aiClient, setAIClient] = useState<AIClient | null>(null);
 
   // LocalStorageからAPIキーと設定を読み込み
