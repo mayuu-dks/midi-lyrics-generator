@@ -33,7 +33,14 @@ export default function WebComponentDemo() {
 
   return (
     <div className="container mx-auto py-4">
-      <h1 className="text-2xl font-bold mb-4">MIDI Lyrics Generator (Web Component Demo)</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">MIDI Lyrics Generator (Web Component Demo)</h1>
+        <Link href="/">
+          <a className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-2 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
+            ← メインページへ戻る
+          </a>
+        </Link>
+      </div>
       
       <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-800/30 rounded border border-yellow-300 dark:border-yellow-700">
         <h2 className="font-semibold mb-2">使い方</h2>
