@@ -300,15 +300,12 @@ ${fullPhrasePattern}
       } 
       else if ((apiProvider === 'google' || apiProvider === 'google25') && aiClient.google) {
         // Google AIを使用
-        const modelName = apiProvider === 'google' ? "gemini-1.5-pro" : "gemini-2.5-flash";
+        const modelName = apiProvider === 'google' ? "gemini-1.5-pro" : "gemini-2.0-flash";
         const model = aiClient.google.getGenerativeModel({ model: modelName });
         
+        const prompt = `${systemContent}\n\n${userContent}`;
         const result = await model.generateContent({
-          contents: [{ parts: [{ text: `${systemContent}\n\n${userContent}` }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1500,
-          },
+          contents: [{ parts: [{ text: prompt }] }],
         });
         
         const response = result.response;
