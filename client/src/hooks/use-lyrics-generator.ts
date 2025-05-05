@@ -298,9 +298,9 @@ ${fullPhrasePattern}
         console.log('OpenAI応答:', response);
         generatedLyrics = response.choices[0].message.content || '';
       } 
-      else if ((apiProvider === 'google' || apiProvider === 'google25') && aiClient.google) {
+      else if (apiProvider === 'google25' && aiClient.google) {
         // Google AIを使用
-        const modelName = apiProvider === 'google' ? "gemini-1.5-pro" : "gemini-2.0-flash";
+        const modelName = "gemini-2.0-flash";
         const model = aiClient.google.getGenerativeModel({ model: modelName });
         
         const prompt = `${systemContent}\n\n${userContent}`;

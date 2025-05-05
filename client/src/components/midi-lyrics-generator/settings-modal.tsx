@@ -77,7 +77,6 @@ export default function SettingsModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="openai">OpenAI (GPT-4o)</SelectItem>
-                  <SelectItem value="google">Google (Gemini-1.5-pro)</SelectItem>
                   <SelectItem value="google25">Google (Gemini 2.0 Flash)</SelectItem>
                   <SelectItem value="anthropic">Anthropic (Claude 3 Sonnet)</SelectItem>
                 </SelectContent>
