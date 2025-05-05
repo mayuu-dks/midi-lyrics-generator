@@ -39,8 +39,9 @@ export default function SettingsModal({
   onDelete,
   onClose
 }: SettingsModalProps) {
+  console.log(`SettingsModalが開かれました - 現在のAPIプロバイダー: ${apiProvider}`);
   const [localApiKey, setLocalApiKey] = useState(apiKey);
-  const [localApiProvider, setLocalApiProvider] = useState<ApiProvider>(apiProvider);
+  const [localApiProvider, setLocalApiProvider] = useState<ApiProvider>(apiProvider || 'anthropic');
 
   useEffect(() => {
     setLocalApiKey(apiKey);

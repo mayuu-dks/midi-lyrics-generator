@@ -25,41 +25,97 @@ interface UseAIProviderResult {
 // ローカルストレージをリセットして初期状態に戻す関数
 function resetLocalStorage() {
   try {
+    console.log('ローカルストレージをリセットします...');
+    
+    // 以前の設定を消去するための事前確認
+    const currentProvider = localStorage.getItem('ai_provider');
+    console.log(`現在のAPIプロバイダー設定: ${currentProvider || '未設定'}`);
+    
     // APIキーは削除
     localStorage.removeItem('ai_api_key');
-    // APIプロバイダーはanthropicをデフォルトに設定
+    
+    // APIプロバイダーには必たanthtropicを設定
     localStorage.setItem('ai_provider', 'anthropic');
-    console.log('ローカルストレージをリセットしました');
+    
+    // 設定後の確認
+    const newProvider = localStorage.getItem('ai_provider');
+    console.log(`リセット後のAPIプロバイダー設定: ${newProvider}`);
+    
+    console.log('✔️ ローカルストレージを正常にリセットしました');
+    return true;
   } catch (e) {
-    console.error('ローカルストレージのリセットに失敗しました:', e);
+    console.error('⚠️ ローカルストレージのリセットに失敗しました:', e);
+    return false;
   }
 }
 
+// アプリ全体で一貫して使用するデフォルトのAPIプロバイダー値
+export const DEFAULT_API_PROVIDER: ApiProvider = 'anthropic';
+
 export function useAIProvider(): UseAIProviderResult {
   const [apiKey, setApiKey] = useState<string>('');
-  const [apiProvider, setApiProvider] = useState<ApiProvider>('anthropic');
+  const [apiProvider, setApiProvider] = useState<ApiProvider>(DEFAULT_API_PROVIDER);
   const [aiClient, setAIClient] = useState<AIClient | null>(null);
-
-  // LocalStorageからAPIキーと設定を読み込み
+  
+  // グローバルスコープで初期化（レンダリング前）
+  // 開発モードの場合、このコードは2回実行される可能性があるが、localStorageを汚染するわけではないのでOK
   useEffect(() => {
-    // アプリケーションの初期化時にローカルストレージをチェックし、デフォルトのantropicを設定
-    if (!localStorage.getItem('ai_provider')) {
-      resetLocalStorage();
-    }
+    console.log('初期化: APIプロバイダー設定をチェック・初期化します');
     
-    const storedApiKey = localStorage.getItem('ai_api_key');
-    const storedProvider = localStorage.getItem('ai_provider') as ApiProvider | null;
+    // デフォルトを強制的に設定する場合は次の行のコメントを外す
+    // return resetAndForceAnthropicProvider();
     
-    if (storedApiKey) {
-      setApiKey(storedApiKey);
-    }
+    const storedProvider = localStorage.getItem('ai_provider');
+    console.log(`ローカルストレージ内のAPIプロバイダー設定: ${storedProvider || '未設定'}`);
     
-    // 保存されている設定があればそれを使用し、なければanthropicをデフォルトとする
-    if (storedProvider && (storedProvider === 'openai' || storedProvider === 'google25' || storedProvider === 'anthropic')) {
-      setApiProvider(storedProvider);
+    // ローカルストレージに設定がない場合は必ず「anthropic」を設定
+    if (!storedProvider) {
+      console.log('✅ APIプロバイダーが未設定のため、デフォルト値「anthropic」を設定します');
+      localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
+      // 状態も即座に更新
+      setApiProvider(DEFAULT_API_PROVIDER);
     } else {
-      // デフォルトプロバイダーを設定
-      localStorage.setItem('ai_provider', 'anthropic');
+      // 有効な値かチェック
+      if (storedProvider !== 'openai' && storedProvider !== 'google25' && storedProvider !== 'anthropic') {
+        console.log(`❗ 無効なAPIプロバイダー「${storedProvider}」を「${DEFAULT_API_PROVIDER}」に修正します`);
+        localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
+        setApiProvider(DEFAULT_API_PROVIDER);
+      } else if (storedProvider !== DEFAULT_API_PROVIDER) {
+        // 現在のAPI設定がDEFAULT_API_PROVIDERと異なる場合、設定を変更するか判断
+        // console.log(`🚩 現在のAPIプロバイダー「${storedProvider}」をデフォルト値「${DEFAULT_API_PROVIDER}」に更新します`);
+        // localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
+        // setApiProvider(DEFAULT_API_PROVIDER);
+        
+        // 現在の設定を使用
+        console.log(`ℹ️ 現在のAPIプロバイダー設定「${storedProvider}」を使用します`);
+        setApiProvider(storedProvider as ApiProvider);
+      } else {
+        // DEFAULT_API_PROVIDERと同じ場合はそのまま使用
+        console.log(`✔️ APIプロバイダーは既にデフォルト値「${DEFAULT_API_PROVIDER}」に設定されています`);
+        setApiProvider(DEFAULT_API_PROVIDER);
+      }
+    }
+    
+    // 設定を強制的にアップデートする関数
+    function resetAndForceAnthropicProvider(): boolean {
+      try {
+        console.log('🔄 APIプロバイダー設定を強制的にリセットし「anthropic」に設定します');
+        localStorage.setItem('ai_provider', DEFAULT_API_PROVIDER);
+        setApiProvider(DEFAULT_API_PROVIDER);
+        return true;
+      } catch (e) {
+        console.error('❗ APIプロバイダー設定のリセットに失敗しました:', e);
+        return false;
+      }
+    }
+    
+    // APIキーの読み込み
+    const storedApiKey = localStorage.getItem('ai_api_key');
+    if (storedApiKey) {
+      console.log('APIキーが設定されています');
+      setApiKey(storedApiKey);
+    } else {
+      console.log('APIキーが設定されていません');
     }
   }, []);
 

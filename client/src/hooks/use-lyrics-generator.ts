@@ -23,6 +23,10 @@ interface UseLyricsGeneratorProps {
   customTempLyrics?: string;
 }
 
+// アプリ全体で一貫してAnthropicをデフォルトに使用するよう決定
+// この値はユーザー設定で上書きされる可能性があるが、初期状態ではこの値が使われる
+const DEFAULT_API_PROVIDER: ApiProvider = 'anthropic';
+
 export function useLyricsGenerator({
   midiData,
   currentFileName,

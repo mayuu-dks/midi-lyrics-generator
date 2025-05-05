@@ -30,6 +30,21 @@ interface LyricsHistory {
 }
 
 export default function MidiLyricsGenerator() {
+  // localStorageが利用可能か確認し、APIプロバイダー設定がなければ初期化
+  useEffect(() => {
+    try {
+      const provider = localStorage.getItem('ai_provider');
+      console.log(`MidiLyricsGenerator初期化、localStorage確認: ai_provider=${provider}`);
+      
+      // APIプロバイダー設定がない場合は初期化
+      if (!provider) {
+        console.log('☺️ APIプロバイダー設定が見つからないため、antrhopicを設定します');
+        localStorage.setItem('ai_provider', 'anthropic');
+      }
+    } catch (err) {
+      console.error('ローカルストレージアクセスエラー:', err);
+    }
+  }, []);
   const [language, setLanguage] = useState<Language>('ja');
   const [showSettings, setShowSettings] = useState(false);
   const [showPromptPreview, setShowPromptPreview] = useState(false);
