@@ -13,6 +13,9 @@ import {
 
 import { ApiProvider } from './settings-modal';
 
+// 言語の型定義
+type Language = 'ja' | 'en';
+
 interface PromptPreviewModalProps {
   customPrompt: string;
   userPrompt?: string;
@@ -21,6 +24,7 @@ interface PromptPreviewModalProps {
   onClose: () => void;
   apiKey?: string; // APIキーが設定されているかチェックするために追加
   apiProvider?: ApiProvider;
+  language?: Language; // 言語設定を追加
 }
 
 export default function PromptPreviewModal({
@@ -30,7 +34,8 @@ export default function PromptPreviewModal({
   onGenerate,
   onClose,
   apiKey,
-  apiProvider = 'openai'
+  apiProvider = 'openai',
+  language = 'ja' // デフォルトは日本語
 }: PromptPreviewModalProps) {
   const [copiedSystem, setCopiedSystem] = useState(false);
   const [copiedUser, setCopiedUser] = useState(false);
@@ -57,10 +62,16 @@ export default function PromptPreviewModal({
   
   // 両方のプロンプトを連結してコピーする関数
   const copyAllPrompts = () => {
-    const allText = `【システムプロンプト】
+    const allText = language === 'ja'
+      ? `【システムプロンプト】
 ${customPrompt}
 
 【ユーザープロンプト】
+${userPrompt || ''}`
+      : `[System Prompt]
+${customPrompt}
+
+[User Prompt]
 ${userPrompt || ''}`;
     copyToClipboard(allText, 'all');
   };
@@ -71,17 +82,20 @@ ${userPrompt || ''}`;
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BrainCircuit className="h-5 w-5" />
-            AIプロンプト内容の確認
+            {language === 'ja' ? 'AIプロンプト内容の確認' : 'Confirm AI Prompt Contents'}
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="space-y-2">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              以下の詳細なプロンプトを使用して歌詞を生成します。システムプロンプトは必要に応じて編集できます。
+              {language === 'ja' 
+                ? '以下の詳細なプロンプトを使用して歌詞を生成します。システムプロンプトは必要に応じて編集できます。'
+                : 'The following detailed prompts will be used to generate lyrics. The system prompt can be edited as needed.'
+              }
             </p>
             <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded text-xs inline-flex items-center">
-              <span className="font-semibold mr-2">現在のAIプロバイダー:</span>
+              <span className="font-semibold mr-2">{language === 'ja' ? '現在のAIプロバイダー:' : 'Current AI Provider:'}</span>
               <span className="text-blue-600 dark:text-blue-400">
                 {apiProvider === 'openai' ? 'OpenAI (GPT-4o)' : apiProvider === 'google25' ? 'Google (Gemini 2.0 Flash)' : 'Anthropic (Claude 3 Sonnet)'}
               </span>
@@ -92,7 +106,7 @@ ${userPrompt || ''}`;
             {/* システムプロンプト */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <Label htmlFor="custom_prompt" className="font-semibold text-base">システムプロンプト</Label>
+                <Label htmlFor="custom_prompt" className="font-semibold text-base">{language === 'ja' ? 'システムプロンプト' : 'System Prompt'}</Label>
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -102,12 +116,12 @@ ${userPrompt || ''}`;
                   {copiedSystem ? (
                     <>
                       <Check className="h-4 w-4 mr-1" />
-                      コピー済み
+                      {language === 'ja' ? 'コピー済み' : 'Copied'}
                     </>
                   ) : (
                     <>
                       <ClipboardCopy className="h-4 w-4 mr-1" />
-                      コピー
+                      {language === 'ja' ? 'コピー' : 'Copy'}
                     </>
                   )}
                 </Button>
@@ -116,7 +130,7 @@ ${userPrompt || ''}`;
                 {customPrompt}
               </div>
               <div className="mt-4">
-                <Label htmlFor="edit_prompt" className="mb-1 block">システムプロンプトを編集：</Label>
+                <Label htmlFor="edit_prompt" className="mb-1 block">{language === 'ja' ? 'システムプロンプトを編集：' : 'Edit System Prompt:'}</Label>
                 <Textarea
                   id="edit_prompt"
                   rows={5}
@@ -131,7 +145,7 @@ ${userPrompt || ''}`;
             {userPrompt && (
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <Label htmlFor="user_prompt" className="font-semibold text-base">詳細で強力なユーザープロンプト</Label>
+                  <Label htmlFor="user_prompt" className="font-semibold text-base">{language === 'ja' ? '詳細で強力なユーザープロンプト' : 'Detailed and Powerful User Prompt'}</Label>
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -141,12 +155,12 @@ ${userPrompt || ''}`;
                     {copiedUser ? (
                       <>
                         <Check className="h-4 w-4 mr-1" />
-                        コピー済み
+                        {language === 'ja' ? 'コピー済み' : 'Copied'}
                       </>
                     ) : (
                       <>
                         <ClipboardCopy className="h-4 w-4 mr-1" />
-                        コピー
+                        {language === 'ja' ? 'コピー' : 'Copy'}
                       </>
                     )}
                   </Button>
@@ -154,7 +168,12 @@ ${userPrompt || ''}`;
                 <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-80 overflow-y-auto">
                   {userPrompt}
                 </div>
-                <p className="mt-2 text-xs text-gray-500">注意：この詳細プロンプトはMIDIデータと仮歌詞に基づいて生成され、自動的に使用されます。仮歌詞ではカンマ(,)がメロディと歌詞の文節の区切りを指定するために使用されます。このプロンプトは編集できません。</p>
+                <p className="mt-2 text-xs text-gray-500">
+                  {language === 'ja' 
+                    ? '注意：この詳細プロンプトはMIDIデータと仮歌詞に基づいて生成され、自動的に使用されます。仮歌詞ではカンマ(,)がメロディと歌詞の文節の区切りを指定するために使用されます。このプロンプトは編集できません。'
+                    : 'Note: This detailed prompt is generated based on MIDI data and temporary lyrics, and is used automatically. In temporary lyrics, commas (,) are used to specify breaks between melody and lyric phrases. This prompt cannot be edited.'
+                  }
+                </p>
               </div>
             )}
           </div>
@@ -162,7 +181,12 @@ ${userPrompt || ''}`;
         
         <div className="mt-4 text-xs text-gray-500 border-t pt-2">
           <div className="flex items-center justify-between mb-2">
-            <p>※ {apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} APIキーを設定していない場合は、プロンプトをコピーして別のAIサービスで使用できます。</p>
+            <p>
+              {language === 'ja' 
+                ? `※ ${apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} APIキーを設定していない場合は、プロンプトをコピーして別のAIサービスで使用できます。`
+                : `* If you haven't set up a ${apiProvider === 'openai' ? 'OpenAI' : apiProvider === 'anthropic' ? 'Anthropic' : 'Google'} API key, you can copy the prompts and use them with another AI service.`
+              }
+            </p>
             <Button 
               variant="outline" 
               size="sm" 
