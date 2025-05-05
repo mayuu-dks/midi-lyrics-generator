@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import OpenAI from 'openai';
 import type { MidiAnalysis } from './use-midi-analysis';
+import { useAIProvider, AIClient } from './use-ai-provider';
+import { ApiProvider } from '@/components/midi-lyrics-generator/settings-modal';
 // Define types since importing from midi-lyrics-generator would cause circular dependencies
 type Language = 'ja' | 'en';
 

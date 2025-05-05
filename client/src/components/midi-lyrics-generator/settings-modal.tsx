@@ -4,6 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -11,9 +18,13 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
+export type ApiProvider = 'openai' | 'google';
+
 interface SettingsModalProps {
   apiKey: string;
   setApiKey: (key: string) => void;
+  apiProvider: ApiProvider;
+  setApiProvider: (provider: ApiProvider) => void;
   onSubmit: (e: React.FormEvent) => void;
   onDelete: () => void;
   onClose: () => void;
@@ -22,19 +33,24 @@ interface SettingsModalProps {
 export default function SettingsModal({
   apiKey,
   setApiKey,
+  apiProvider,
+  setApiProvider,
   onSubmit,
   onDelete,
   onClose
 }: SettingsModalProps) {
   const [localApiKey, setLocalApiKey] = useState(apiKey);
+  const [localApiProvider, setLocalApiProvider] = useState<ApiProvider>(apiProvider);
 
   useEffect(() => {
     setLocalApiKey(apiKey);
-  }, [apiKey]);
+    setLocalApiProvider(apiProvider);
+  }, [apiKey, apiProvider]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setApiKey(localApiKey);
+    setApiProvider(localApiProvider);
     onSubmit(e);
   };
 
@@ -49,28 +65,65 @@ export default function SettingsModal({
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <Label htmlFor="api_key" className="mb-1 block">OpenAI API キー</Label>
-            <Input
-              type="password"
-              id="api_key"
-              placeholder="sk-..."
-              value={localApiKey}
-              onChange={(e) => setLocalApiKey(e.target.value)}
-              className="mb-1"
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              OpenAI APIキーがなければ、
-              <a 
-                href="https://platform.openai.com/api-keys" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-primary-600 dark:text-primary-400 hover:underline"
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="api_provider" className="mb-1 block">API プロバイダー</Label>
+              <Select 
+                value={localApiProvider} 
+                onValueChange={(value: ApiProvider) => setLocalApiProvider(value)}
               >
-                公式サイト
-              </a>
-              で作成してください。
-            </p>
+                <SelectTrigger id="api_provider" className="w-full">
+                  <SelectValue placeholder="APIプロバイダーを選択" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="openai">OpenAI</SelectItem>
+                  <SelectItem value="google">Google AI</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="api_key" className="mb-1 block">
+                {localApiProvider === 'openai' ? 'OpenAI API キー' : 'Google AI API キー'}
+              </Label>
+              <Input
+                type="password"
+                id="api_key"
+                placeholder={localApiProvider === 'openai' ? 'sk-...' : 'AIza...'}
+                value={localApiKey}
+                onChange={(e) => setLocalApiKey(e.target.value)}
+                className="mb-1"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {localApiProvider === 'openai' ? (
+                  <>
+                    OpenAI APIキーがなければ、
+                    <a 
+                      href="https://platform.openai.com/api-keys" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-primary-600 dark:text-primary-400 hover:underline"
+                    >
+                      公式サイト
+                    </a>
+                    で作成してください。
+                  </>
+                ) : (
+                  <>
+                    Google AI APIキーがなければ、
+                    <a 
+                      href="https://makersuite.google.com/app/apikey" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-primary-600 dark:text-primary-400 hover:underline"
+                    >
+                      Google AI Studio
+                    </a>
+                    で作成してください。
+                  </>
+                )}
+              </p>
+            </div>
           </div>
           
           <div className="flex items-center">
