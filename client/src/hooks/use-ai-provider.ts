@@ -59,7 +59,8 @@ export function useAIProvider(): UseAIProviderResult {
       setAIClient({ google: googleClient, provider: apiProvider });
     } else if (apiProvider === 'anthropic') {
       const anthropicClient = new Anthropic({
-        apiKey: apiKey
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true // ブラウザでの実行を許可
       });
       setAIClient({ anthropic: anthropicClient, provider: 'anthropic' });
     }
