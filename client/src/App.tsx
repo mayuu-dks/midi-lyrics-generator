@@ -9,6 +9,7 @@ import WebComponentDemo from "@/pages/web-component-demo";
 function Router() {
   return (
     <Switch>
+      <Route path="/midi-lyrics-generator/" component={Home} />
       <Route path="/" component={Home} />
       <Route path="/web-component" component={WebComponentDemo} />
       <Route component={NotFound} />
