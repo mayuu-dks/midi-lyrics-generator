@@ -292,18 +292,21 @@ Instructions:
   };
   
   // Copy lyrics to clipboard
-  const copyLyrics = useCallback(() => {
+  const copyLyrics = useCallback(async () => {
     if (!lyrics) return;
     
-    navigator.clipboard.writeText(lyrics).then(() => {
+    try {
+      // 新しいクロスブラウザ対応コピーユーティリティを使用
+      const { copy } = await import('@/lib/copy');
+      await copy(lyrics);
       setIsCopied(true);
       setTimeout(() => {
         setIsCopied(false);
       }, 2000);
-    }).catch(err => {
+    } catch (err) {
       console.error('クリップボードへのコピーに失敗しました:', err);
       setError('歌詞のコピーに失敗しました');
-    });
+    }
   }, [lyrics]);
   
   // Generate lyrics using AI
