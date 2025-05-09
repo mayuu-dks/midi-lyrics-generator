@@ -1,5 +1,1 @@
-cd path/to/midi-lyrics-generator
-touch docs/.nojekyll
-git add docs/.nojekyll
-git commit -m "Disable Jekyll on GitHub Pages"
-git push origin main
+
