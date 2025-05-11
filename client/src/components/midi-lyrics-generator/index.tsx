@@ -329,11 +329,6 @@ export default function MidiLyricsGenerator() {
         </div>
       </div>
 
-      {/* Copyright Footer */}
-      <footer className="mt-8 mb-4 text-center text-gray-500 dark:text-gray-400 text-sm">
-        &copy; 2025 MayuÜ
-      </footer>
-
       {/* Modals */}
       {showSettings && (
         <SettingsModal 
