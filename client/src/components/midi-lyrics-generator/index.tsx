@@ -7,6 +7,7 @@ import PromptPreviewModal from './prompt-preview-modal';
 import TempLyricsEditor from './temp-lyrics-editor';
 import { useMidiAnalysis } from '@/hooks/use-midi-analysis';
 import { useLyricsGenerator } from '@/hooks/use-lyrics-generator';
+import { AdBanner } from '@/components/ads/AdBanner';
 
 // Centralized language and mood options
 const moodOptions = {
@@ -231,6 +232,15 @@ export default function MidiLyricsGenerator() {
                 : `Current Settings: UI Lang=${uiLanguage === 'ja' ? 'Japanese' : 'English'}, Lyrics Lang=${lyricsLanguage === 'ja' ? 'Japanese' : 'English'}`}
             </div>
           </div>
+        </div>
+        
+        {/* 説明文とメインコンテンツの間の横長バナー広告 */}
+        <div className="my-6">
+          <AdBanner 
+            className="mx-auto" 
+            slot="1234567890" 
+            format="horizontal"
+          />
         </div>
       </header>
 

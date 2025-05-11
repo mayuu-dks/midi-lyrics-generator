@@ -19,11 +19,11 @@ export function AdBanner({
   format = 'auto',
   responsive = true
 }: AdBannerProps) {
-  const adRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
-      if (adRef.current && typeof window !== "undefined") {
+      if (containerRef.current && typeof window !== "undefined") {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       }
     } catch (err) {
@@ -40,9 +40,8 @@ export function AdBanner({
     : { display: 'block' };
 
   return (
-    <div className={`ad-container ${className}`} data-testid="ad-container">
+    <div ref={containerRef} className={`ad-container ${className}`} data-testid="ad-container">
       <ins
-        ref={adRef as React.RefObject<HTMLModElement>}
         className="adsbygoogle"
         style={formatStyle}
         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
