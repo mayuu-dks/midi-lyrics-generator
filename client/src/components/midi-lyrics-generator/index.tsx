@@ -140,36 +140,40 @@ export default function MidiLyricsGenerator() {
           </div>
           <div className="flex gap-2">
             {/* UI言語切り替えボタン */}
-            <button 
-              type="button" 
-              onClick={toggleUILanguage}
-              className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg hover:bg-primary-100 focus:ring-4 focus:outline-none dark:text-primary-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-            >
+            <div className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg dark:text-primary-400 dark:bg-gray-800">
               <Globe className="mr-2" size={20} />
-              <span>{uiLanguage === 'ja' ? 'English' : '日本語'}</span>
-            </button>
+              <button 
+                type="button" 
+                onClick={toggleUILanguage}
+                className="px-3 py-1 font-medium rounded-md border transition-colors bg-white border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:text-gray-200"
+              >
+                {uiLanguage === 'ja' ? 'English' : '日本語'}
+              </button>
+            </div>
 
             {/* 歌詞言語切り替えボタン */}
-            <div className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg hover:bg-primary-100 focus:ring-4 focus:outline-none dark:text-primary-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+            <div className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg dark:text-primary-400 dark:bg-gray-800">
               <span className="mr-2">{uiLanguage === 'ja' ? '歌詞言語' : 'Lyrics Lang'}</span>
-              <button 
-                type="button"
-                onClick={() => setLyricsLanguage('ja')}
-                className={`px-2 py-1 rounded-l-md ${lyricsLanguage === 'ja' 
-                  ? 'bg-primary-700 text-white dark:bg-primary-600' 
-                  : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
-              >
-                JA
-              </button>
-              <button 
-                type="button"
-                onClick={() => setLyricsLanguage('en')}
-                className={`px-2 py-1 rounded-r-md ${lyricsLanguage === 'en' 
-                  ? 'bg-primary-700 text-white dark:bg-primary-600' 
-                  : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
-              >
-                EN
-              </button>
+              <div className="flex">
+                <button 
+                  type="button"
+                  onClick={() => setLyricsLanguage('ja')}
+                  className={`px-2 py-1 min-w-[40px] font-medium rounded-l-md border transition-colors ${lyricsLanguage === 'ja' 
+                    ? 'bg-primary-600 text-white border-primary-600 dark:bg-primary-500 dark:border-primary-500 dark:text-white' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`}
+                >
+                  JA
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setLyricsLanguage('en')}
+                  className={`px-2 py-1 min-w-[40px] font-medium rounded-r-md border transition-colors ${lyricsLanguage === 'en' 
+                    ? 'bg-primary-600 text-white border-primary-600 dark:bg-primary-500 dark:border-primary-500 dark:text-white' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`}
+                >
+                  EN
+                </button>
+              </div>
             </div>
 
             {/* 設定ボタン */}
