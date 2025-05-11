@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 interface AdBannerProps {
   className?: string;
-  slot: string;
+  slot?: string;
   format?: 'auto' | 'rectangle' | 'horizontal' | 'vertical';
   responsive?: boolean;
 }
@@ -45,10 +45,10 @@ export function AdBanner({
       <ins
         className="adsbygoogle"
         style={formatStyle}
-        data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-        data-ad-slot={slot}
-        data-ad-format={format}
-        data-full-width-responsive={responsive ? "true" : "false"}
+        data-ad-client="ca-pub-8761387357073771"
+        data-ad-slot="1485764027"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
       />
     </div>
   );

@@ -234,13 +234,9 @@ export default function MidiLyricsGenerator() {
           </div>
         </div>
         
-        {/* 説明文とメインコンテンツの間の横長バナー広告 */}
+        {/* 説明文とメインコンテンツの間の広告 */}
         <div className="my-6">
-          <AdBanner 
-            className="mx-auto" 
-            slot="1234567890" 
-            format="horizontal"
-          />
+          <AdBanner className="mx-auto" />
         </div>
       </header>
 
@@ -358,14 +354,9 @@ export default function MidiLyricsGenerator() {
         />
       )}
 
-      {/* 著作権表示の前のレスポンシブ広告 */}
+      {/* 著作権表示の前の広告 */}
       <div className="mt-12 mb-6">
-        <AdBanner 
-          className="mx-auto" 
-          slot="9876543210" 
-          format="auto"
-          responsive={true}
-        />
+        <AdBanner className="mx-auto" />
       </div>
 
       {/* 著作権表示 */}
