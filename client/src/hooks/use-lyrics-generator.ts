@@ -176,7 +176,6 @@ Lyrics language: English`;
 絶対に守るべき制約：
 1. 音符数の厳密な一致:
    - ${midi.noteCount}個の音符に対応する音節を生成すること
-   - 音符数の差異は許容しない
    - 1音符に対して1音節を基本とする
    - 音符の長さに応じて最大音節数が変化する
 
@@ -234,7 +233,6 @@ Whole notes and longer: ${notesByDuration.whole}
 Absolute constraints:
 1. Strict matching of note count:
    - Generate syllables that correspond to ${midi.noteCount} notes
-   - No discrepancy in the number of notes is tolerated
    - Basically use 1 syllable per note
    - Maximum number of syllables changes according to note length
 
