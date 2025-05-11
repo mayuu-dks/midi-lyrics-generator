@@ -362,6 +362,21 @@ export default function MidiLyricsGenerator() {
           language={uiLanguage}
         />
       )}
+
+      {/* 著作権表示の前のレスポンシブ広告 */}
+      <div className="mt-12 mb-6">
+        <AdBanner 
+          className="mx-auto" 
+          slot="9876543210" 
+          format="auto"
+          responsive={true}
+        />
+      </div>
+
+      {/* 著作権表示 */}
+      <footer className="mt-8 text-center text-gray-500 text-sm dark:text-gray-400">
+        <p>&copy; {new Date().getFullYear()} MIDI Lyrics Generator. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

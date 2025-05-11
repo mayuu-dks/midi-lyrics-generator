@@ -32,15 +32,16 @@ export function AdBanner({
   }, []);
 
   const formatStyle = format === 'horizontal' 
-    ? { display: 'block', width: '728px', height: '90px' }
+    ? { display: 'block', maxWidth: '100%', height: '90px', overflow: 'hidden' }
     : format === 'rectangle'
-    ? { display: 'inline-block', width: '300px', height: '250px' }
+    ? { display: 'inline-block', maxWidth: '100%', height: '250px', overflow: 'hidden' }
     : format === 'vertical'
-    ? { display: 'inline-block', width: '160px', height: '600px' }
-    : { display: 'block' };
+    ? { display: 'inline-block', maxWidth: '100%', height: '600px', overflow: 'hidden' }
+    : { display: 'block', maxWidth: '100%', overflow: 'hidden' };
 
   return (
-    <div ref={containerRef} className={`ad-container ${className}`} data-testid="ad-container">
+    <div ref={containerRef} className={`ad-container p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${className}`} data-testid="ad-container">
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Advertisement</div>
       <ins
         className="adsbygoogle"
         style={formatStyle}
