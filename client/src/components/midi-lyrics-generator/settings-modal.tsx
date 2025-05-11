@@ -98,7 +98,7 @@ export default function SettingsModal({
                 <SelectContent>
                   <SelectItem value="anthropic">Anthropic (Claude 3.7 Sonnet)</SelectItem>
                   <SelectItem value="openai">OpenAI (GPT-4o)</SelectItem>
-                  <SelectItem value="google25">Google (Gemini 2.5 Pro)</SelectItem>
+                  <SelectItem value="google25">Google (Gemini 2.0 Flash)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
