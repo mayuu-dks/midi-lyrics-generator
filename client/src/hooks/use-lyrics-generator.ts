@@ -17,7 +17,6 @@ interface UseLyricsGeneratorProps {
   language: Language;
   songTitle: string;
   songMood: string;
-  songTone: string; // 口調のパラメータを追加
   customPrompt: string;
   setCustomPrompt: (prompt: string) => void;
   setShowPromptPreview: (show: boolean) => void;
@@ -34,7 +33,6 @@ export function useLyricsGenerator({
   language,
   songTitle,
   songMood,
-  songTone,
   customPrompt,
   setCustomPrompt,
   setShowPromptPreview,
@@ -147,19 +145,16 @@ export function useLyricsGenerator({
     }
     
     const moodText = songMood && songMood !== 'none' ? songMood : '指定なし';
-    const toneText = songTone && songTone !== 'none' ? songTone : '指定なし';
     
     // 言語に基づいてシステムプロンプトを選択
     const systemPrompt = language === 'ja'
       ? `あなたはプロの作詞家です。提供されたMIDIファイルの分析情報に基づいて、メロディに完全に合った歌詞を生成してください。
 曲のタイトル: ${songTitle || '指定なし'}
 曲の雰囲気: ${moodText}
-曲の口調: ${toneText}
 歌詞の言語: 日本語`
       : `You are a professional lyricist. Based on the analysis information of the provided MIDI file, please generate lyrics that perfectly match the melody.
 Song title: ${songTitle || 'Not specified'}
 Song mood: ${songMood && songMood !== 'none' ? songMood : 'Not specified'}
-Song tone: ${songTone && songTone !== 'none' ? songTone : 'Not specified'}
 Lyrics language: English`;
     
     // 言語に応じてユーザープロンプトを選択
@@ -169,7 +164,6 @@ Lyrics language: English`;
 曲の設定:
 タイトル: ${songTitle || '指定なし'}
 イメージ: ${moodText}
-口調: ${toneText}
 
 音符パターンの詳細:
 32分音符以下: ${notesByDuration.veryShort}個
@@ -221,7 +215,6 @@ ${fullPhrasePattern}
 - メロディのリズムと音符の長さに合わせて、自然な歌詞を作成してください。
 - ${songTitle ? `曲のタイトル「${songTitle}」を考慮してください。` : ''}
 - ${(songMood && songMood !== 'none') ? `曲の雰囲気「${songMood}」を反映させてください。` : ''}
-- ${(songTone && songTone !== 'none') ? `「${songTone}」な口調を意識して歌詞を作成してください。` : ''}
 - 歌詞は日本語で生成してください。
 - 歌詞のみを出力し、説明や前置きは不要です。`
       : `Please generate lyrics that perfectly match the note pattern.
@@ -229,7 +222,6 @@ ${fullPhrasePattern}
 Song settings:
 Title: ${songTitle || 'Not specified'}
 Mood: ${songMood && songMood !== 'none' ? songMood : 'Not specified'}
-Tone: ${songTone && songTone !== 'none' ? songTone : 'Not specified'}
 
 Note pattern details:
 32nd notes and shorter: ${notesByDuration.veryShort}
@@ -281,12 +273,11 @@ Instructions:
 - Create natural lyrics that match the rhythm and length of the notes in the melody.
 - ${songTitle ? `Consider the song title "${songTitle}".` : ''}
 - ${(songMood && songMood !== 'none') ? `Reflect the mood "${songMood}" in the lyrics.` : ''}
-- ${(songTone && songTone !== 'none') ? `Use a "${songTone}" tone in the lyrics.` : ''}
 - Generate the lyrics in English.
 - Output only the lyrics, no explanations or preambles are needed.`;
     
     return { systemPrompt, userPrompt };
-  }, [language, songTitle, songMood, songTone, customTempLyrics]);
+  }, [language, songTitle, songMood, customTempLyrics]);
   
   // Function to navigate through lyrics history
   const navigateHistory = (direction: 'back' | 'forward') => {
