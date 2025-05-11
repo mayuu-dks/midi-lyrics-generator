@@ -33,11 +33,6 @@ export default function MidiLyricsGenerator() {
   // localStorageが利用可能か確認し、APIプロバイダー設定がなければ初期化
   useEffect(() => {
     try {
-      // Web Componentモードの時にもイベントを通知
-      if (window.customElements && window.customElements.get('midi-lyrics-generator')) {
-        console.log('MidiLyricsGenerator Web Component connected');
-      }
-      
       const provider = localStorage.getItem('ai_provider');
       console.log(`MidiLyricsGenerator初期化、localStorage確認: ai_provider=${provider}`);
       

@@ -44,10 +44,7 @@ export default function PromptPreviewModal({
   // プロンプトをクリップボードにコピーする関数
   const copyToClipboard = async (text: string, type: 'system' | 'user' | 'all') => {
     try {
-      // 新しいクロスブラウザ対応コピーユーティリティを使用
-      const { copy } = await import('@/lib/copy');
-      await copy(text);
-      
+      await navigator.clipboard.writeText(text);
       if (type === 'system') {
         setCopiedSystem(true);
         setTimeout(() => setCopiedSystem(false), 2000);
