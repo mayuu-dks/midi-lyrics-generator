@@ -12,15 +12,21 @@ interface ControlPanelProps {
   language: Language;
   songTitle: string;
   songMood: string;
+  songTone: string; // 口調のパラメータを追加
   midiData: MidiAnalysis | null;
   currentFileName: string | null;
   fileInputRef: React.RefObject<HTMLInputElement>;
   setSongTitle: (title: string) => void;
   setSongMood: (mood: string) => void;
+  setSongTone: (tone: string) => void; // 口調の設定関数を追加
   analyzeMidi: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   resetState: () => void;
   generateAILyrics: (useEditedPrompt?: boolean) => Promise<void>;
   moodOptions: {
+    ja: string[];
+    en: string[];
+  };
+  toneOptions: {
     ja: string[];
     en: string[];
   };
@@ -30,17 +36,21 @@ export default function ControlPanel({
   language,
   songTitle,
   songMood,
+  songTone,
   midiData,
   currentFileName,
   fileInputRef,
   setSongTitle,
   setSongMood,
+  setSongTone,
   analyzeMidi,
   resetState,
   generateAILyrics,
-  moodOptions
+  moodOptions,
+  toneOptions
 }: ControlPanelProps) {
   const currentMoodOptions = moodOptions[language as keyof typeof moodOptions];
+  const currentToneOptions = toneOptions[language as keyof typeof toneOptions];
   
   return (
     <div className="w-full lg:w-1/3 space-y-6">
@@ -143,6 +153,25 @@ export default function ControlPanel({
               {currentMoodOptions.map((mood: string) => (
                 <SelectItem key={mood} value={mood}>
                   {mood}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="song_tone" className="mb-2">
+            {language === 'ja' ? '口調 (オプション)' : 'Tone (Optional)'}
+          </Label>
+          <Select value={songTone} onValueChange={setSongTone}>
+            <SelectTrigger id="song_tone">
+              <SelectValue placeholder={language === 'ja' ? '口調を選択' : 'Select tone'} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{language === 'ja' ? '口調を選択' : 'Select tone'}</SelectItem>
+              {currentToneOptions.map((tone: string) => (
+                <SelectItem key={tone} value={tone}>
+                  {tone}
                 </SelectItem>
               ))}
             </SelectContent>

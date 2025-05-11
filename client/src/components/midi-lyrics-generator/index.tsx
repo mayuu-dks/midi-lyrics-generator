@@ -22,6 +22,16 @@ const moodOptions = {
   ]
 };
 
+// 口調のオプション
+const toneOptions = {
+  ja: [
+    'カジュアル', 'クール', 'キュート', 'フェミニン', 'ロック'
+  ],
+  en: [
+    'Casual', 'Cool', 'Cute', 'Feminine', 'Rock'
+  ]
+};
+
 type Language = 'ja' | 'en';
 
 interface LyricsHistory {
@@ -53,6 +63,7 @@ export default function MidiLyricsGenerator() {
   const [showPromptPreview, setShowPromptPreview] = useState(false);
   const [songTitle, setSongTitle] = useState('');
   const [songMood, setSongMood] = useState('');
+  const [songTone, setSongTone] = useState(''); // 口調の状態を追加
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [showTempLyricsEditor, setShowTempLyricsEditor] = useState<boolean>(false);
   const [customTempLyrics, setCustomTempLyrics] = useState<string>('');
@@ -90,6 +101,7 @@ export default function MidiLyricsGenerator() {
     language: lyricsLanguage, // 歌詞生成用の言語を渡す
     songTitle,
     songMood,
+    songTone, // 口調のパラメータを追加
     customPrompt,
     setCustomPrompt,
     setShowPromptPreview,
@@ -249,15 +261,18 @@ export default function MidiLyricsGenerator() {
           language={uiLanguage}
           songTitle={songTitle}
           songMood={songMood}
+          songTone={songTone} // 口調のパラメータを追加
           midiData={midiData}
           currentFileName={currentFileName}
           fileInputRef={fileInputRef}
           setSongTitle={setSongTitle}
           setSongMood={setSongMood}
+          setSongTone={setSongTone} // 口調の設定関数を追加
           analyzeMidi={analyzeMidi}
           resetState={resetState}
           generateAILyrics={generateAILyrics}
           moodOptions={moodOptions}
+          toneOptions={toneOptions} // 口調のオプションを追加
         />
 
         <ContentPanel 
