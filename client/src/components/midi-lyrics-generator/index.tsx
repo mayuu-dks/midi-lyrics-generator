@@ -162,7 +162,7 @@ export default function MidiLyricsGenerator() {
                   onClick={() => setLyricsLanguage('ja')}
                   aria-pressed={lyricsLanguage === 'ja'}
                   className={`px-3 py-1 transition-colors ${lyricsLanguage === 'ja' 
-                    ? 'bg-primary-600 text-white font-semibold' 
+                    ? 'bg-primary-200 text-gray-900 font-semibold dark:bg-primary-900 dark:text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
                 >
                   JA
@@ -173,7 +173,7 @@ export default function MidiLyricsGenerator() {
                   onClick={() => setLyricsLanguage('en')}
                   aria-pressed={lyricsLanguage === 'en'}
                   className={`px-3 py-1 transition-colors ${lyricsLanguage === 'en' 
-                    ? 'bg-primary-600 text-white font-semibold' 
+                    ? 'bg-primary-200 text-gray-900 font-semibold dark:bg-primary-900 dark:text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
                 >
                   EN
