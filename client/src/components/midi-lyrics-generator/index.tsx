@@ -45,7 +45,10 @@ export default function MidiLyricsGenerator() {
       console.error('ローカルストレージアクセスエラー:', err);
     }
   }, []);
-  const [language, setLanguage] = useState<Language>('ja');
+  // UI言語とLyrics言語を分離
+  const [uiLanguage, setUILanguage] = useState<Language>('ja');
+  const [lyricsLanguage, setLyricsLanguage] = useState<Language>('ja');
+  
   const [showSettings, setShowSettings] = useState(false);
   const [showPromptPreview, setShowPromptPreview] = useState(false);
   const [songTitle, setSongTitle] = useState('');
@@ -84,7 +87,7 @@ export default function MidiLyricsGenerator() {
   } = useLyricsGenerator({
     midiData,
     currentFileName,
-    language,
+    language: lyricsLanguage, // 歌詞生成用の言語を渡す
     songTitle,
     songMood,
     customPrompt,
@@ -118,8 +121,8 @@ export default function MidiLyricsGenerator() {
     }
   }, [midiData, customTempLyrics]);
 
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'ja' ? 'en' : 'ja');
+  const toggleUILanguage = () => {
+    setUILanguage(prev => prev === 'ja' ? 'en' : 'ja');
   };
 
   return (
@@ -136,14 +139,40 @@ export default function MidiLyricsGenerator() {
             </h1>
           </div>
           <div className="flex gap-2">
+            {/* UI言語切り替えボタン */}
             <button 
               type="button" 
-              onClick={toggleLanguage}
+              onClick={toggleUILanguage}
               className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg hover:bg-primary-100 focus:ring-4 focus:outline-none dark:text-primary-400 dark:bg-gray-800 dark:hover:bg-gray-700"
             >
               <Globe className="mr-2" size={20} />
-              <span>{language === 'ja' ? 'English' : '日本語'}</span>
+              <span>{uiLanguage === 'ja' ? 'English' : '日本語'}</span>
             </button>
+
+            {/* 歌詞言語切り替えボタン */}
+            <div className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg hover:bg-primary-100 focus:ring-4 focus:outline-none dark:text-primary-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+              <span className="mr-2">{uiLanguage === 'ja' ? '歌詞言語' : 'Lyrics Lang'}</span>
+              <button 
+                type="button"
+                onClick={() => setLyricsLanguage('ja')}
+                className={`px-2 py-1 rounded-l-md ${lyricsLanguage === 'ja' 
+                  ? 'bg-primary-700 text-white dark:bg-primary-600' 
+                  : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
+              >
+                JA
+              </button>
+              <button 
+                type="button"
+                onClick={() => setLyricsLanguage('en')}
+                className={`px-2 py-1 rounded-r-md ${lyricsLanguage === 'en' 
+                  ? 'bg-primary-700 text-white dark:bg-primary-600' 
+                  : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
+              >
+                EN
+              </button>
+            </div>
+
+            {/* 設定ボタン */}
             <button 
               type="button" 
               onClick={() => setShowSettings(true)}
@@ -156,13 +185,13 @@ export default function MidiLyricsGenerator() {
         
         <div className="mt-4 p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-sm">
           <div className="font-medium mb-2 text-blue-800 dark:text-blue-300">
-            {language === 'ja' 
+            {uiLanguage === 'ja' 
               ? 'MIDIファイルから日本語/英語の歌詞を自動生成するツール' 
               : 'Generate Japanese/English lyrics from MIDI files'}
           </div>
           
           <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
-            {language === 'ja' ? (
+            {uiLanguage === 'ja' ? (
               <>
                 <li>MIDIファイルをアップロードして、メロディに合った歌詞をAI生成（ヒント：Aメロ、サビなどパートごとに分けて生成したほうがわかりやすいです）</li>
                 <li>最新のAIモデル <strong>Anthropic Claude 3.7 Sonnet</strong>、<strong>OpenAI GPT-4o</strong>、または <strong>Google Gemini 2.0 Flash</strong> を使用（APIキーは右上の設定ボタンから設定可能）</li>
@@ -182,13 +211,15 @@ export default function MidiLyricsGenerator() {
           <div className="mt-3 text-xs flex flex-wrap gap-3">
             <div className="flex items-center bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
               <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-              {language === 'ja' 
+              {uiLanguage === 'ja' 
                 ? `使用AIモデル: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : apiProvider === 'google25' ? 'Google Gemini 2.0 Flash' : 'Anthropic Claude 3.7 Sonnet'}` 
                 : `AI Model: ${apiProvider === 'openai' ? 'OpenAI GPT-4o' : apiProvider === 'google25' ? 'Google Gemini 2.0 Flash' : 'Anthropic Claude 3.7 Sonnet'}`}
             </div>
             <div className="flex items-center bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
               <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-              {language === 'ja' ? '対応言語: 日本語 / 英語' : 'Languages: Japanese / English'}
+              {uiLanguage === 'ja' 
+                ? `現在の設定: UI言語=${uiLanguage === 'ja' ? '日本語' : '英語'}, 歌詞言語=${lyricsLanguage === 'ja' ? '日本語' : '英語'}` 
+                : `Current Settings: UI Lang=${uiLanguage === 'ja' ? 'Japanese' : 'English'}, Lyrics Lang=${lyricsLanguage === 'ja' ? 'Japanese' : 'English'}`}
             </div>
           </div>
         </div>
@@ -200,13 +231,13 @@ export default function MidiLyricsGenerator() {
         onTempLyricsUpdate={handleTempLyricsUpdate}
         isVisible={showTempLyricsEditor}
         currentFileName={currentFileName}
-        language={language}
+        language={uiLanguage}
       />
 
       {/* Main Content */}
       <main className="flex flex-col lg:flex-row gap-6">
         <ControlPanel 
-          language={language}
+          language={uiLanguage}
           songTitle={songTitle}
           songMood={songMood}
           midiData={midiData}
@@ -230,7 +261,7 @@ export default function MidiLyricsGenerator() {
           isCopied={isCopied}
           navigateHistory={navigateHistory}
           copyLyrics={copyLyrics}
-          language={language}
+          language={uiLanguage}
         />
       </main>
 
@@ -238,17 +269,17 @@ export default function MidiLyricsGenerator() {
       <div className="mt-12 mb-8 max-w-4xl mx-auto">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white flex items-center gap-2">
           <HelpCircle size={20} />
-          {language === 'ja' ? 'よくある質問' : 'Frequently Asked Questions'}
+          {uiLanguage === 'ja' ? 'よくある質問' : 'Frequently Asked Questions'}
         </h2>
         
         <div className="space-y-4">
 
           <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {language === 'ja' ? 'Q: 設定したAPIキー（Anthropic/OpenAI/Google）はどこに保存されるの？' : 'Q: Where are the API keys (Anthropic/OpenAI/Google) stored?'}
+              {uiLanguage === 'ja' ? 'Q: 設定したAPIキー（Anthropic/OpenAI/Google）はどこに保存されるの？' : 'Q: Where are the API keys (Anthropic/OpenAI/Google) stored?'}
             </h3>
             <div className="text-gray-700 dark:text-gray-300">
-              {language === 'ja' ? (
+              {uiLanguage === 'ja' ? (
                 <p>
                   APIキーはブラウザの「localStorage」に保存されます。これは以下の特徴があります：(1) ローカルストレージはブラウザ内に保存されるため、サーバーには送信されません (2) 同じブラウザ・同じデバイスでアプリを再度開いた場合に自動的に読み込まれます (3) 異なるブラウザやデバイス、またはプライベートモード/シークレットモードでは保存されません (4) ブラウザの履歴やキャッシュをクリアした場合は削除されます。セキュリティの観点では、APIキーはユーザーのデバイス内のみに保存され、アプリのサーバーサイドには保存されないため、サーバー側でのデータ漏洩リスクはありません。公共のコンピュータを使用する場合は、使用後にAPIキーを削除することをお勧めします。
                 </p>
@@ -262,10 +293,10 @@ export default function MidiLyricsGenerator() {
           
           <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {language === 'ja' ? 'Q: アップロードしたMIDIファイルはどこに送られるの？' : 'Q: Where are uploaded MIDI files sent?'}
+              {uiLanguage === 'ja' ? 'Q: アップロードしたMIDIファイルはどこに送られるの？' : 'Q: Where are uploaded MIDI files sent?'}
             </h3>
             <div className="text-gray-700 dark:text-gray-300">
-              {language === 'ja' ? (
+              {uiLanguage === 'ja' ? (
                 <p>
                   アップロードされたMIDIファイルは、ブラウザ内でのみ処理され、どこのサーバーにも送信されません。具体的には：(1) ファイルはブラウザのメモリ上に読み込まれます (2) ブラウザ内でMIDIファイルを解析・分析します (3) 分析結果（音符の数、長さ、ピッチなど）のみがアプリ内で利用されます (4) MIDIファイル自体は保存されず、ブラウザのメモリ上にのみ一時的に存在します (5) ブラウザを閉じるか、ページをリロードすると、読み込まれたMIDIデータは消去されます。このシステムはプライバシーとセキュリティを考慮して設計されており、MIDIファイルデータが外部に送信されることはありません。
                 </p>
@@ -309,7 +340,7 @@ export default function MidiLyricsGenerator() {
           onClose={() => setShowPromptPreview(false)}
           apiKey={apiKey}
           apiProvider={apiProvider}
-          language={language}
+          language={uiLanguage}
         />
       )}
     </div>

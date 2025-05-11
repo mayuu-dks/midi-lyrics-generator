@@ -56,6 +56,9 @@ export default function SettingsModal({
         // なければ空にする
         setLocalApiKey('');
       }
+      
+      // プロバイダー切り替え時にラベルが変更されたことをコンソールに表示
+      console.log(`APIプロバイダーを変更: ${apiProvider} → ${localApiProvider}`);
     }
   }, [localApiProvider, apiProvider]);
 
