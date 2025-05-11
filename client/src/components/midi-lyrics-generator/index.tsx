@@ -142,34 +142,39 @@ export default function MidiLyricsGenerator() {
             {/* UI言語切り替えボタン */}
             <div className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg dark:text-primary-400 dark:bg-gray-800">
               <Globe className="mr-2" size={20} />
-              <button 
-                type="button" 
-                onClick={toggleUILanguage}
-                className="px-3 py-1 font-medium rounded-md border transition-colors bg-white border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:text-gray-200"
-              >
-                {uiLanguage === 'ja' ? 'English' : '日本語'}
-              </button>
+              <div className="rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
+                <button 
+                  type="button" 
+                  onClick={toggleUILanguage}
+                  className="px-3 py-1 font-medium transition-colors bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                >
+                  {uiLanguage === 'ja' ? 'English' : '日本語'}
+                </button>
+              </div>
             </div>
 
-            {/* 歌詞言語切り替えボタン */}
+            {/* 歌詞言語切り替えボタン - シンプルにして確実に両方表示されるデザイン */}
             <div className="inline-flex items-center p-2 text-sm font-medium text-center text-primary-700 bg-primary-50 rounded-lg dark:text-primary-400 dark:bg-gray-800">
               <span className="mr-2">{uiLanguage === 'ja' ? '歌詞言語' : 'Lyrics Lang'}</span>
-              <div className="flex">
+              <div className="flex rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
                 <button 
-                  type="button"
+                  type="button" 
                   onClick={() => setLyricsLanguage('ja')}
-                  className={`px-2 py-1 min-w-[40px] font-medium rounded-l-md border transition-colors ${lyricsLanguage === 'ja' 
-                    ? 'bg-primary-600 text-white border-primary-600 dark:bg-primary-500 dark:border-primary-500 dark:text-white' 
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`}
+                  aria-pressed={lyricsLanguage === 'ja'}
+                  className={`px-3 py-1 transition-colors ${lyricsLanguage === 'ja' 
+                    ? 'bg-primary-600 text-white font-semibold' 
+                    : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
                 >
                   JA
                 </button>
+                <div className="w-px bg-gray-300 dark:bg-gray-600"></div>
                 <button 
-                  type="button"
+                  type="button" 
                   onClick={() => setLyricsLanguage('en')}
-                  className={`px-2 py-1 min-w-[40px] font-medium rounded-r-md border transition-colors ${lyricsLanguage === 'en' 
-                    ? 'bg-primary-600 text-white border-primary-600 dark:bg-primary-500 dark:border-primary-500 dark:text-white' 
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`}
+                  aria-pressed={lyricsLanguage === 'en'}
+                  className={`px-3 py-1 transition-colors ${lyricsLanguage === 'en' 
+                    ? 'bg-primary-600 text-white font-semibold' 
+                    : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
                 >
                   EN
                 </button>
