@@ -368,7 +368,7 @@ Instructions:
       } 
       else if (apiProvider === 'google25' && aiClient.google) {
         // Google AIを使用
-        const modelName = "gemini-2.0-flash";
+        const modelName = "gemini-2.5-pro";
         const model = aiClient.google.getGenerativeModel({ model: modelName });
         
         const prompt = `${systemContent}\n\n${userContent}`;
