@@ -375,7 +375,7 @@ export default function MidiLyricsGenerator() {
 
       {/* 著作権表示 */}
       <footer className="mt-8 text-center text-gray-500 text-sm dark:text-gray-400">
-        <p>&copy; {new Date().getFullYear()} MIDI Lyrics Generator. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} MIDI Lyrics Generator by MayuÜ. All rights reserved.</p>
       </footer>
     </div>
   );
