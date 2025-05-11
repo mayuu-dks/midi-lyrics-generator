@@ -128,6 +128,11 @@ export default function MidiLyricsGenerator() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* タイトル上の広告 */}
+      <div className="mb-6">
+        <AdBanner className="mx-auto" />
+      </div>
+      
       {/* App Header */}
       <header className="mb-6">
         <div className="flex justify-between items-center">
@@ -232,11 +237,6 @@ export default function MidiLyricsGenerator() {
                 : `Current Settings: UI Lang=${uiLanguage === 'ja' ? 'Japanese' : 'English'}, Lyrics Lang=${lyricsLanguage === 'ja' ? 'Japanese' : 'English'}`}
             </div>
           </div>
-        </div>
-        
-        {/* 説明文とメインコンテンツの間の広告 */}
-        <div className="my-6">
-          <AdBanner className="mx-auto" />
         </div>
       </header>
 
